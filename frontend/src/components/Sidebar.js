@@ -38,10 +38,8 @@ const Sidebar = () => {
     <SidebarContainer>
       <Title>Vita Sicura</Title>
       <StyledLink to="/analisi-descrittiva">Analisi Descrittiva</StyledLink>
-      <StyledLink to="/predizione">Predizione</StyledLink>
       <StyledLink to="/chatbot">Chatbot</StyledLink>
-      <StyledLink to="/trascrizione">Trascrizione</StyledLink>
-      <StyledLink to="/podcast">Podcast</StyledLink>
+      <StyledLink to="/assistente-vocale">Assistente Vocale</StyledLink>
       <StyledLink to="/database">Database</StyledLink>
     </SidebarContainer>
   );

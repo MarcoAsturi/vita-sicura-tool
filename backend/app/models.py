@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey
+from sqlalchemy.dialects.postgresql import ARRAY 
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -65,3 +66,12 @@ class Sinistro(Base):
     prodotto = Column(String(50))
     area_di_bisogno = Column(String(50))
     sinistro = Column(String)
+
+class Note(Base):
+    __tablename__ = 'note'
+    __table_args__ = {'schema': 'vitasicura_schema'}
+
+    codice_cliente = Column(Integer, primary_key=True, index=True)
+    nome = Column(String(50))
+    cognome = Column(String(50))
+    note = Column(ARRAY(String))

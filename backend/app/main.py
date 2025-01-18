@@ -1,10 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import ORJSONResponse
-from app.routers import clienti, chatbot
+from app.routers import clienti, chatbot, voice_assistant
 import os
+from dotenv import load_dotenv
 
-import logging
+load_dotenv()
 
 app = FastAPI(default_response_class=ORJSONResponse)
 
@@ -18,3 +19,4 @@ app.add_middleware(
 
 app.include_router(clienti.router)
 app.include_router(chatbot.router)
+app.include_router(voice_assistant.router)

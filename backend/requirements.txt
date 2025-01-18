@@ -7,3 +7,9 @@ llama_index==0.12.10
 openai==1.59.7
 orjson
 python-dotenv
+vosk
+spacy
+psycopg2-binary
+python-multipart
+requests
+
