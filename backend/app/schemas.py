@@ -62,3 +62,13 @@ class ClienteDetailsSchema(BaseModel):
     class Config:
         orm_mode = True
         from_attributes = True
+
+class NoteSchema(BaseModel):
+    id_nota: int
+    codice_cliente: int
+    nome: str
+    cognome: str
+    note: str
+
+    class Config:
+        orm_mode = True

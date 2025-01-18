@@ -1,14 +1,11 @@
 import os
 import wave
 import subprocess
-import hashlib
 import psycopg2
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 from vosk import Model, KaldiRecognizer
 import spacy
-import requests
-import zipfile
 import json
 
 router = APIRouter()
@@ -98,17 +95,16 @@ def riconosci_audio_vosk(audio_path: str, model_path: str) -> str:
 def estrai_informazioni_chiave(testo: str) -> dict:
     """
     Estrae informazioni chiave (nome, cognome e nota) dal testo trascritto usando spaCy.
-    - Se il testo contiene '}{', considera solo la prima parte (primo oggetto JSON).
-    - Se viene trovato il marker "nota:" si estrae il testo successivo;
-      altrimenti, se viene trovato " con nota " si estrae il testo successivo.
-    - In assenza di marker, viene usata l'intera trascrizione come nota.
+    Se il testo contiene più oggetti JSON, si prende il primo.
+    Cerca il marker "nota:" o la sequenza " con nota ".
+    In assenza di marker, l'intera trascrizione viene usata come nota.
     """
-    # clean up testo if it contains multiple JSON objects
+    # clean up the text
     if "},{" in testo:
         testo = testo.split("},{")[0] + "}"
     elif "}{" in testo:
         testo = testo.split("}{")[0] + "}"
-
+    
     try:
         nlp = spacy.load("it_core_news_md")
     except Exception as e:
@@ -119,7 +115,6 @@ def estrai_informazioni_chiave(testo: str) -> dict:
     cognome = None
     nota = None
 
-    # extract entities of type "PER" (person)
     for ent in doc.ents:
         if ent.label_ == "PER":
             splitted = ent.text.split()
@@ -142,7 +137,6 @@ def estrai_informazioni_chiave(testo: str) -> dict:
         nota = testo.strip()
 
     return {"nome": nome, "cognome": cognome, "nota": nota}
-
 
 def recupera_codice_cliente(info: dict, conn_params: dict) -> int:
     """
@@ -167,15 +161,12 @@ def recupera_codice_cliente(info: dict, conn_params: dict) -> int:
 
 def genera_query_note(info: dict, codice_cliente: int) -> tuple:
     """
-    Genera una query parametrizzata per inserire o aggiornare il campo "note" nella tabella "note".
-    Utilizza la funzione PostgreSQL array_append per aggiungere una nuova nota.
-    In questo caso, il conflitto viene rilevato sulla chiave primaria codice_cliente.
+    Genera una query per inserire una nuova riga nella tabella "note".
+    Ogni riga rappresenta una nota distinta per un cliente.
     """
     query = """
-    INSERT INTO vitasicura_schema.note (codice_cliente, nome, cognome, note)
-    VALUES (%s, %s, %s, ARRAY[%s])
-    ON CONFLICT (codice_cliente)
-    DO UPDATE SET note = array_append(vitasicura_schema.note.note, EXCLUDED.note[1]);
+    INSERT INTO vitasicura_schema.note (codice_cliente, nome, cognome, nota)
+    VALUES (%s, %s, %s, %s);
     """
     valori = (codice_cliente, info["nome"], info["cognome"], info["nota"])
     return query, valori
@@ -198,8 +189,9 @@ def aggiorna_database_sicuro(query: str, valori: tuple, conn_params: dict) -> bo
 async def assistente_vocale(file: UploadFile = File(...)):
     """
     Endpoint che riceve un file audio, lo converte se necessario, lo trascrive,
-    estrae informazioni chiave, recupera il codice_cliente dalla tabella clienti e aggiorna la tabella "note".
-    Restituisce trascrizione, informazioni estratte e lo stato dell’aggiornamento.
+    estrae informazioni chiave, recupera il codice_cliente dalla tabella clienti
+    e inserisce una nuova riga nella tabella "note".
+    Restituisce trascrizione, informazioni estratte e lo stato dell'aggiornamento.
     """
     print(f"Ricevuto file: {file.filename}")
     contents = await file.read()
@@ -209,7 +201,7 @@ async def assistente_vocale(file: UploadFile = File(...)):
     with open(temp_file_path, "wb") as f:
         f.write(contents)
     
-    # if the file is an M4A, convert it to WAV
+    # Se il file è in formato M4A, convertilo in WAV
     if file.filename.lower().endswith(".m4a"):
         wav_file_path = f"temp_{os.path.splitext(file.filename)[0]}.wav"
         try:
@@ -225,7 +217,7 @@ async def assistente_vocale(file: UploadFile = File(...)):
     else:
         audio_path = temp_file_path
 
-    # check if the audio is compliant and fix it if needed
+    # Check if the audio is compliant
     try:
         fixed_wav_path = f"fixed_{os.path.basename(audio_path)}"
         audio_path = assicurati_audio_conforme(audio_path, fixed_wav_path)
@@ -237,6 +229,7 @@ async def assistente_vocale(file: UploadFile = File(...)):
     
     try:
         print("Inizio trascrizione con Vosk...")
+        VOSK_MODEL_PATH = os.environ.get("VOSK_MODEL_PATH")
         trascrizione = riconosci_audio_vosk(audio_path, VOSK_MODEL_PATH)
     except Exception as e:
         print("Errore durante la trascrizione:", e)

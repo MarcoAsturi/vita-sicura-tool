@@ -71,7 +71,8 @@ class Note(Base):
     __tablename__ = 'note'
     __table_args__ = {'schema': 'vitasicura_schema'}
 
-    codice_cliente = Column(Integer, primary_key=True, index=True)
+    id_nota = Column(Integer, primary_key=True, autoincrement=True)
+    codice_cliente = Column(Integer, nullable=False)
     nome = Column(String(50))
     cognome = Column(String(50))
-    note = Column(ARRAY(String))
+    note = Column(String(500))
