@@ -13,42 +13,6 @@ import json
 
 router = APIRouter()
 
-# Funzione per scaricare e estrarre il modello Vosk (opzionale)
-def download_and_extract_model(model_url: str, target_dir: str):
-    """
-    Scarica il modello dal URL specificato e lo estrae nella cartella target.
-    """
-    if not os.path.exists(target_dir):
-        os.makedirs(target_dir)
-    
-    zip_path = os.path.join(target_dir, "model.zip")
-    
-    print(f"Scaricamento del modello da {model_url}...")
-    response = requests.get(model_url, stream=True)
-    if response.status_code != 200:
-        raise ValueError(f"Errore durante il download del modello: {response.status_code}")
-    
-    with open(zip_path, "wb") as f:
-        for chunk in response.iter_content(chunk_size=8192):
-            if chunk:
-                f.write(chunk)
-    print("Download completato.")
-
-    with zipfile.ZipFile(zip_path, "r") as zip_ref:
-        zip_ref.extractall(target_dir)
-    os.remove(zip_path)
-    print("Modello estratto con successo.")
-
-# Configurazione del modello Vosk:
-MODEL_NAME = "vosk-model-small-it-0.22"
-MODELS_DIR = "./models"  # Assicurati di aggiungere questa cartella al .gitignore
-VOSK_MODEL_PATH = os.path.join(MODELS_DIR, MODEL_NAME)
-
-# Se il modello non è già presente, (opzionalmente) scaricalo automaticamente.
-# if not os.path.exists(VOSK_MODEL_PATH):
-#     MODEL_URL = "https://alphacephei.com/vosk/models/vosk-model-small-it-0.22.zip"
-#     download_and_extract_model(MODEL_URL, MODELS_DIR)
-
 def convert_m4a_to_wav(input_path: str, output_path: str):
     """
     Converte un file audio da M4A a WAV a 16kHz mono utilizzando ffmpeg.
@@ -139,9 +103,8 @@ def estrai_informazioni_chiave(testo: str) -> dict:
       altrimenti, se viene trovato " con nota " si estrae il testo successivo.
     - In assenza di marker, viene usata l'intera trascrizione come nota.
     """
-    # Pulizia: se il testo contiene più oggetti JSON, prendi il primo oggetto
+    # clean up testo if it contains multiple JSON objects
     if "},{" in testo:
-        # Se vengono separati da "},{" prendi la prima parte, aggiungendoci la chiusura mancante
         testo = testo.split("},{")[0] + "}"
     elif "}{" in testo:
         testo = testo.split("}{")[0] + "}"
@@ -156,16 +119,15 @@ def estrai_informazioni_chiave(testo: str) -> dict:
     cognome = None
     nota = None
 
-    # Estrai entità di tipo PERSONA
+    # extract entities of type "PER" (person)
     for ent in doc.ents:
         if ent.label_ == "PER":
             splitted = ent.text.split()
             if not nome and len(splitted) > 0:
-                nome = splitted[0].capitalize()  # Capitalizza la prima lettera
+                nome = splitted[0].capitalize()
                 if len(splitted) > 1:
                     cognome = splitted[1].capitalize()
             else:
-                # Se c'è più di un'entità, potresti voler assegnare la seconda come cognome
                 if not cognome:
                     cognome = ent.text.capitalize()
     
@@ -247,7 +209,7 @@ async def assistente_vocale(file: UploadFile = File(...)):
     with open(temp_file_path, "wb") as f:
         f.write(contents)
     
-    # Se il file è in formato M4A, convertilo in WAV
+    # if the file is an M4A, convert it to WAV
     if file.filename.lower().endswith(".m4a"):
         wav_file_path = f"temp_{os.path.splitext(file.filename)[0]}.wav"
         try:
@@ -263,7 +225,7 @@ async def assistente_vocale(file: UploadFile = File(...)):
     else:
         audio_path = temp_file_path
 
-    # Controlla la conformità del file WAV e convertilo se necessario
+    # check if the audio is compliant and fix it if needed
     try:
         fixed_wav_path = f"fixed_{os.path.basename(audio_path)}"
         audio_path = assicurati_audio_conforme(audio_path, fixed_wav_path)

@@ -1,9 +1,7 @@
-// frontend/src/pages/VoiceAssistant.js
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { API_BASE_URL } from '../config';
 
-// Styled Components
 const Container = styled.div`
   max-width: 600px;
   margin: 2rem auto;
@@ -93,11 +91,9 @@ const VoiceAssistant = () => {
     <Container>
       <Title>Assistente Vocale</Title>
 
-      {/* Sezione per l'upload del file audio */}
       <SectionTitle>Carica un file audio</SectionTitle>
       <input type="file" accept="audio/*" onChange={handleFileChange} />
 
-      {/* Sezione per la registrazione diretta (feature in costruzione) */}
       <SectionTitle>Registrazione dal microfono</SectionTitle>
       <FeaturePlaceholder>
         Feature in costruzione - presto disponibile!
