@@ -1,57 +1,124 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { API_BASE_URL } from '../config';
 
+// Styled Components
+
 const ChatContainer = styled.div`
-  max-width: 600px;
-  margin: 0 auto;
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 `;
 
-const Messages = styled.div`
-  border: 1px solid #ccc;
-  padding: 10px;
+const ChatHeader = styled.h2`
+  text-align: center;
+  color: #333;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+`;
+
+const MessagesContainer = styled.div`
+  border: 1px solid #e0e0e0;
+  padding: 1rem;
   height: 400px;
-  overflow-y: scroll;
-  background-color: #f9f9f9;
+  overflow-y: auto;
+  background-color: #fafafa;
+  border-radius: 4px;
+  margin-bottom: 1rem;
 `;
 
-const Message = styled.div`
-  margin: 10px 0;
+const MessageRow = styled.div`
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  
   &.user {
-    text-align: right;
-    color: blue;
+    justify-content: flex-end;
   }
+  
   &.bot {
-    text-align: left;
-    color: green;
+    justify-content: flex-start;
   }
+`;
+
+const Avatar = styled.img`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0.5rem;
+`;
+
+const MessageBubble = styled.div`
+  max-width: 70%;
+  padding: 0.75rem 1rem;
+  border-radius: 16px;
+  background-color: ${props => props.sender === 'user' ? '#007bff' : '#e2e2e2'};
+  color: ${props => props.sender === 'user' ? '#fff' : '#333'};
+  font-size: 0.95rem;
 `;
 
 const InputContainer = styled.div`
   display: flex;
-  margin-top: 10px;
+  gap: 0.5rem;
 `;
 
-const Input = styled.input`
+const TextInput = styled.input`
   flex: 1;
-  padding: 10px;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
 `;
 
-const Button = styled.button`
-  padding: 10px;
+const SendButton = styled.button`
+  padding: 0.75rem 1.25rem;
+  background-color: #007bff;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+  &:hover {
+    background-color: #0056b3;
+  }
 `;
+
+const cleanBotResponse = (rawText) => {
+  const withoutTags = rawText.replace(/<\/?response>/g, '');
+  // add a newline after each sentence if the next sentence starts with a capital letter
+  const formattedText = withoutTags.replace(/\. ([A-Z])/g, '.\n$1');
+  return formattedText;
+};
+
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([
-    { sender: 'bot', text: 'Ciao! Come posso aiutarti oggi?' }
+    { sender: 'bot', text: 'Ciao! Sono GIADA. Come posso aiutarti oggi?' }
   ]);
   const [input, setInput] = useState('');
+  const messagesEndRef = useRef(null);
+
+  // Funzione per lo scroll automatico in basso
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  // Effetto per eseguire lo scroll ogni volta che i messaggi cambiano
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const handleSend = async () => {
     if (input.trim() === '') return;
 
     setMessages(prev => [...prev, { sender: 'user', text: input }]);
-
     try {
       const response = await fetch(`${API_BASE_URL}/chatbot`, {
         method: "POST",
@@ -64,13 +131,13 @@ const Chatbot = () => {
         throw new Error("Errore nella chiamata API");
       }
       const data = await response.json();
-      const botResponse = data.answer;
+      const botResponseRaw = data.answer;
+      const botResponse = cleanBotResponse(botResponseRaw);
       setMessages(prev => [...prev, { sender: 'bot', text: botResponse }]);
     } catch (error) {
       console.error("Errore:", error);
       setMessages(prev => [...prev, { sender: 'bot', text: "Si è verificato un errore con il chatbot." }]);
     }
-
     setInput('');
   };
 
@@ -82,23 +149,33 @@ const Chatbot = () => {
 
   return (
     <ChatContainer>
-      <h2>Chatbot</h2>
-      <Messages>
+      <ChatHeader>G.I.A.D.A.</ChatHeader>
+      <MessagesContainer>
         {messages.map((msg, index) => (
-          <Message key={index} className={msg.sender}>
-            <strong>{msg.sender === 'user' ? 'Tu' : 'Bot'}:</strong> {msg.text}
-          </Message>
+          <MessageRow key={index} className={msg.sender}>
+            {msg.sender === 'bot' && (
+              <Avatar
+                src="/giadabot.png"
+                alt="Giada"
+              />
+            )}
+            <MessageBubble sender={msg.sender}>
+              <strong>{msg.sender === 'user' ? 'Tu' : 'Giada'}:</strong> {msg.text}
+            </MessageBubble>
+          </MessageRow>
         ))}
-      </Messages>
+        {/* Elemento di riferimento per lo scroll */}
+        <div ref={messagesEndRef} />
+      </MessagesContainer>
       <InputContainer>
-        <Input
+        <TextInput
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={handleKeyPress}
           placeholder="Scrivi un messaggio..."
         />
-        <Button onClick={handleSend}>Invia</Button>
+        <SendButton onClick={handleSend}>Invia</SendButton>
       </InputContainer>
     </ChatContainer>
   );
