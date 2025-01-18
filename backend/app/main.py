@@ -6,9 +6,6 @@ import os
 
 import logging
 
-logging.basicConfig(level=logging.INFO)
-logging.info(f"Allowed CORS origins: {os.environ.get('ALLOWED_CORS_ORIGINS')}")
-
 app = FastAPI(default_response_class=ORJSONResponse)
 
 app.add_middleware(
