@@ -2,8 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { API_BASE_URL } from '../config';
 
-// Styled Components
-
 const ChatContainer = styled.div`
   max-width: 700px;
   margin: 2rem auto;
@@ -105,12 +103,10 @@ const Chatbot = () => {
   const [input, setInput] = useState('');
   const messagesEndRef = useRef(null);
 
-  // Funzione per lo scroll automatico in basso
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Effetto per eseguire lo scroll ogni volta che i messaggi cambiano
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -164,7 +160,6 @@ const Chatbot = () => {
             </MessageBubble>
           </MessageRow>
         ))}
-        {/* Elemento di riferimento per lo scroll */}
         <div ref={messagesEndRef} />
       </MessagesContainer>
       <InputContainer>

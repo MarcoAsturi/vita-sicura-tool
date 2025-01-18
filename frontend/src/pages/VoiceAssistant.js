@@ -1,38 +1,70 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { API_BASE_URL } from '../config';
 
 const Container = styled.div`
-  max-width: 600px;
+  max-width: 700px;
   margin: 2rem auto;
-  padding: 1rem;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  font-family: 'Roboto', sans-serif;
 `;
 
-const Title = styled.h2`
+const Title = styled.h1`
+  text-align: center;
+  font-size: 2.8rem;
+  color: #333;
+  margin-bottom: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+`;
+
+const SectionsWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+`;
+
+const Section = styled.div`
+  padding: 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fafafa;
+`;
+
+const SectionTitle = styled.h2`
+  margin-bottom: 1rem;
+  color: #007bff;
+  font-size: 1.75rem;
   text-align: center;
 `;
 
-const SectionTitle = styled.h4`
-  margin-top: 1.5rem;
+const FileUploadContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const MicrophoneContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const FileInput = styled.input`
-  display: block;
-  margin: 1rem auto;
+  margin: 1rem 0;
 `;
 
 const Button = styled.button`
-  display: block;
-  padding: 10px 20px;
-  margin: 1rem auto;
-  border: none;
+  padding: 0.75rem 1.25rem;
   background-color: #007bff;
   color: #fff;
-  border-radius: 4px;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
+  transition: background 0.2s ease-in-out;
   &:hover {
     background-color: #0056b3;
   }
@@ -41,23 +73,66 @@ const Button = styled.button`
 const FeaturePlaceholder = styled.div`
   text-align: center;
   padding: 1rem;
-  margin-top: 1rem;
   border: 1px dashed #ccc;
-  border-radius: 4px;
+  border-radius: 6px;
+  font-style: italic;
   color: #888;
 `;
 
 const ResultContainer = styled.div`
-  margin-top: 1rem;
-  padding: 1rem;
+  margin-top: 2rem;
+  padding: 1.5rem;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 8px;
   background: #f9f9f9;
+`;
+
+const ResultTitle = styled.h3`
+  margin-bottom: 0.5rem;
+  color: #555;
+  text-align: left;
+`;
+
+const Preformatted = styled.pre`
+  background: #fff;
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  overflow-x: auto;
+`;
+
+const InfoTable = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+`;
+
+const InfoRow = styled.tr`
+  border-bottom: 1px solid #ddd;
+`;
+
+const InfoKey = styled.td`
+  font-weight: bold;
+  padding: 0.5rem;
+  width: 30%;
+  color: #555;
+`;
+
+const InfoValue = styled.td`
+  padding: 0.5rem;
+  width: 70%;
+  color: #333;
 `;
 
 const VoiceAssistant = () => {
   const [uploadResult, setUploadResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [uploadResult]);
 
   const handleUploadFile = async (file) => {
     setLoading(true);
@@ -66,7 +141,7 @@ const VoiceAssistant = () => {
     try {
       const response = await fetch(`${API_BASE_URL}/assistente-vocale`, {
         method: "POST",
-        body: formData
+        body: formData,
       });
       if (!response.ok) {
         throw new Error("Upload failed");
@@ -82,38 +157,71 @@ const VoiceAssistant = () => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      handleUploadFile(file);
+    setSelectedFile(file);
+  };
+
+  const handleButtonUpload = () => {
+    if (selectedFile) {
+      handleUploadFile(selectedFile);
     }
   };
 
   return (
     <Container>
-      <Title>Assistente Vocale</Title>
-
-      <SectionTitle>Carica un file audio</SectionTitle>
-      <input type="file" accept="audio/*" onChange={handleFileChange} />
-
-      <SectionTitle>Registrazione dal microfono</SectionTitle>
-      <FeaturePlaceholder>
-        Feature in costruzione - presto disponibile!
-      </FeaturePlaceholder>
-
-      {loading && <p>Elaborazione in corso...</p>}
+      <Title>Voice Assistant</Title>
+      <SectionsWrapper>
+        <Section>
+          <SectionTitle>Carica un file audio</SectionTitle>
+          <FileUploadContainer>
+            <FileInput type="file" accept="audio/*" onChange={handleFileChange} />
+            <Button onClick={handleButtonUpload}>Processa</Button>
+          </FileUploadContainer>
+        </Section>
+        <Section>
+          <SectionTitle>Registra dal microfono</SectionTitle>
+          <MicrophoneContainer>
+            <FeaturePlaceholder>
+              Feature in costruzione - presto disponibile!
+            </FeaturePlaceholder>
+          </MicrophoneContainer>
+        </Section>
+      </SectionsWrapper>
+      {loading && <p style={{ textAlign: "center" }}>Elaborazione in corso...</p>}
       {uploadResult && (
         <ResultContainer>
           {uploadResult.error ? (
-            <p>Error: {uploadResult.error}</p>
+            <>
+              <ResultTitle>Error:</ResultTitle>
+              <p>{uploadResult.error}</p>
+            </>
           ) : (
             <>
-              <SectionTitle>Trascrizione:</SectionTitle>
-              <pre>{uploadResult.trascrizione}</pre>
-              <SectionTitle>Informazioni Estratte:</SectionTitle>
-              <pre>{JSON.stringify(uploadResult.informazioni, null, 2)}</pre>
-              <SectionTitle>Aggiornamento Database:</SectionTitle>
-              <p>{uploadResult.database_aggiornato ? "Successo" : "Fallito"}</p>
+              <ResultTitle>Trascrizione:</ResultTitle>
+              <Preformatted>{uploadResult.trascrizione}</Preformatted>
+              <ResultTitle>Informazioni Estratte:</ResultTitle>
+              <InfoTable>
+                <tbody>
+                  <InfoRow>
+                    <InfoKey>Nome</InfoKey>
+                    <InfoValue>{uploadResult.informazioni.nome}</InfoValue>
+                  </InfoRow>
+                  <InfoRow>
+                    <InfoKey>Cognome</InfoKey>
+                    <InfoValue>{uploadResult.informazioni.cognome}</InfoValue>
+                  </InfoRow>
+                  <InfoRow>
+                    <InfoKey>Nota</InfoKey>
+                    <InfoValue>{uploadResult.informazioni.nota}</InfoValue>
+                  </InfoRow>
+                </tbody>
+              </InfoTable>
+              <ResultTitle>Aggiornamento Database:</ResultTitle>
+              <p style={{ textAlign: "left" }}>
+                {uploadResult.database_aggiornato ? "Successo" : "Fallito"}
+              </p>
             </>
           )}
+          <div ref={messagesEndRef} />
         </ResultContainer>
       )}
     </Container>
