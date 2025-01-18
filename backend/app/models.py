@@ -75,4 +75,4 @@ class Note(Base):
     codice_cliente = Column(Integer, nullable=False)
     nome = Column(String(50))
     cognome = Column(String(50))
-    note = Column(String(500))
+    nota = Column(String(500))

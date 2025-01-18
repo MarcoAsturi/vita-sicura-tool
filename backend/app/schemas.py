@@ -68,7 +68,17 @@ class NoteSchema(BaseModel):
     codice_cliente: int
     nome: str
     cognome: str
-    note: str
+    nota: str
 
     class Config:
         orm_mode = True
+        from_attributes = True
+
+class NoteCreateSchema(BaseModel):
+    nome: str
+    cognome: str
+    nota: str
+
+    class Config:
+        orm_mode = True
+        from_attributes = True
