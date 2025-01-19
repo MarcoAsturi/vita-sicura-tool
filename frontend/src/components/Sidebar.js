@@ -2,10 +2,16 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 
+// Sostituisci "/logo.png" con il percorso effettivo del tuo logo
+const Logo = styled.img`
+  width: 150px;
+  margin-bottom: 30px;
+`;
+
 const SidebarContainer = styled.div`
   width: 200px;
   height: 100vh;
-  background-color: #2c3e50;
+  background-color: #e8f5e9; /* Verde molto chiaro tendente al bianco */
   padding-top: 20px;
   position: fixed;
   display: flex;
@@ -13,31 +19,29 @@ const SidebarContainer = styled.div`
   align-items: center;
 `;
 
-const Title = styled.h1`
-  color: #ecf0f1;
-  font-size: 1.5em;
-  margin-bottom: 30px;
-`;
-
 const StyledLink = styled(NavLink)`
   width: 100%;
-  color: #ecf0f1;
+  color: #2c3e50; /* Puoi anche modificare il colore del testo se necessario */
   padding: 15px 20px;
   text-decoration: none;
   text-align: center;
   &.active {
-    background-color: #34495e;
+    background-color: #34495e;  /* Verde scuro per il link attivo */
+    color: #ecf0f1;
   }
   &:hover {
-    background-color: #34495e;
+    background-color: #34495e;  /* Verde scuro al passaggio del mouse */
+    color: #ecf0f1;
   }
 `;
 
 const Sidebar = () => {
   return (
     <SidebarContainer>
-      <Title>Vita Sicura</Title>
-      <StyledLink to="/analisi-descrittiva">Analisi Descrittiva</StyledLink>
+      {/* Visualizza il logo al posto del titolo */}
+      <Logo src="/LogoVitaSicura.png" alt="Logo Vita Sicura" />
+      <StyledLink to="/dashboard">Dashboard</StyledLink>
+      <StyledLink to="/polizze">Polizze</StyledLink>
       <StyledLink to="/chatbot">Chatbot</StyledLink>
       <StyledLink to="/assistente-vocale">Assistente Vocale</StyledLink>
       <StyledLink to="/database">Database</StyledLink>
