@@ -2,7 +2,6 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 
-// Sostituisci "/logo.png" con il percorso effettivo del tuo logo
 const Logo = styled.img`
   width: 150px;
   margin-bottom: 30px;
@@ -38,8 +37,7 @@ const StyledLink = styled(NavLink)`
 const Sidebar = () => {
   return (
     <SidebarContainer>
-      {/* Visualizza il logo al posto del titolo */}
-      <Logo src="/LogoVitaSicura.png" alt="Logo Vita Sicura" />
+      <Logo src="/logoVitaSicura.png" alt="Logo Vita Sicura" />
       <StyledLink to="/dashboard">Dashboard</StyledLink>
       <StyledLink to="/polizze">Polizze</StyledLink>
       <StyledLink to="/chatbot">Chatbot</StyledLink>

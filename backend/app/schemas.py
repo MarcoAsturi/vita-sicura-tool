@@ -11,6 +11,22 @@ class ClienteSchema(BaseModel):
     luogo_di_residenza: str
     professione: str
     reddito: int
+    reddito_familiare: int
+    numero_figli: int
+    anzianita_con_la_compagnia: int
+    stato_civile: str
+    numero_familiari_a_carico: int
+    reddito_stimato: float
+    patrimonio_finanziario_stimato: float
+    patrimonio_reale_stimato: float
+    consumi_stimati: float
+    propensione_acquisto_prodotti_vita: float 
+    propensione_acquisto_prodotti_danni: float
+    valore_immobiliare_medio: float
+    probabilita_furti_stimata: float
+    probabilita_rapine_stimata: float
+    zona_di_residenza: str
+    agenzia: str
 
     class Config:
         orm_mode = True

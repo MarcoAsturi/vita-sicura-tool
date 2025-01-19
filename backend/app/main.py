@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import ORJSONResponse
-from app.routers import clienti, chatbot, voice_assistant, notes
+from app.routers import clienti, chatbot, voice_assistant, notes, polizze
 import os
 from dotenv import load_dotenv
 
@@ -21,3 +21,4 @@ app.include_router(clienti.router)
 app.include_router(chatbot.router)
 app.include_router(voice_assistant.router)
 app.include_router(notes.router)
+app.include_router(polizze.router)

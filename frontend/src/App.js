@@ -5,11 +5,8 @@ import Sidebar from './components/Sidebar';
 import Chatbot from './pages/Chatbot';
 import Database from './pages/Database';
 import VoiceAssistant from './pages/VoiceAssistant';
-
-// import AnalisiDescrittiva from './pages/AnalisiDescrittiva';
-// import Predizione from './pages/Predizione';
-// import Trascrizione from './pages/Trascrizione';
-// import Podcast from './pages/Podcast';
+import Dashboard from './pages/Dashboard';
+import Polizze from './pages/PolizzeDashboard';
 
 const MainContent = styled.div`
   margin-left: 200px; /* Larghezza della sidebar */
@@ -22,8 +19,9 @@ function App() {
       <Sidebar />
       <MainContent>
         <Routes>
-          <Route path="/" element={<Navigate to="/database" />} />
-          {/* <Route path="/analisi-descrittiva" element={<AnalisiDescrittiva />} />*/}
+          <Route path="/" element={<Navigate to="/dashboard" />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/polizze" element={<Polizze />} />
           <Route path="/chatbot" element={<Chatbot />} />
           <Route path="/assistente-vocale" element={<VoiceAssistant />} />
           <Route path="/database" element={<Database />} />
