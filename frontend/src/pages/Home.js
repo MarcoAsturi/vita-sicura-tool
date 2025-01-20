@@ -83,14 +83,14 @@ const Home = () => {
       <Logo src="logoVitaSicura.png" alt="Logo" />
       <Presentation>
         Benvenuto nel tool di Vita Sicura, lo strumento pensato per facilitare la
-        pianificazione e l’operatività degli agenti assicurativi. Qui potrai
+        pianificazione e l’operatività degli agenti assicurativi.<br /> Qui potrai
         organizzare il tuo lavoro e accedere a informazioni dettagliate sui clienti,
         tramite dashboard interattive e funzionalità integrate.
       </Presentation>
       <Warning>
-        ATTENZIONE: Dopo il primo avvio l'accesso alle funzionalità potrebbe
-        richiedere del tempo (circa 60 secondi). Attendere il cambio di stato per
-        navigare.
+        <strong>ATTENZIONE:</strong> Dopo il primo avvio l'accesso alle funzionalità potrebbe
+        richiedere del tempo (circa 60 secondi).<br /> Attendere il cambio di stato (simbolo verde con scritta 'GO') prima di
+        navigare.<br /> Il caricamento dei grafici e delle tabelle potrebbe richiedere una decina di secondi.
       </Warning>
       <TrafficLight status={status}>
         {status === "ok" ? "GO" : "WAIT"}

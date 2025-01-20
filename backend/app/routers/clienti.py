@@ -56,10 +56,10 @@ async def update_cliente(codice_cliente: int, update_data: ClienteUpdateSchema, 
         new_reddito = update_data.reddito
         if current_reddito > 0:
             variation = abs(new_reddito - current_reddito) / current_reddito
-            if variation > 0.3:
+            if variation > 0.9 or variation < -0.9:
                 raise HTTPException(
                     status_code=400, 
-                    detail=f"Il nuovo reddito ({new_reddito}) differisce troppo dal valore attuale ({current_reddito}). Variazione massima consentita del 30%."
+                    detail=f"Il nuovo reddito ({new_reddito}) differisce troppo dal valore attuale ({current_reddito}). Variazione massima consentita del 90%."
                 )
         
     # check data quality of nome, cognome, eta
