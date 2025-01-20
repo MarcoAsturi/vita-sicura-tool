@@ -168,7 +168,7 @@ const VoiceAssistant = () => {
 
   return (
     <Container>
-      <Title>Voice Assistant</Title>
+      <Title>Vocal Assistant</Title>
       <SectionsWrapper>
         <Section>
           <SectionTitle>Carica un file audio</SectionTitle>

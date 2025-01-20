@@ -15,6 +15,12 @@ import { API_BASE_URL } from '../config';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
+const PieWrapper = styled.div`
+  width: 420px;
+  height: 420px;
+  margin: 0 auto;
+`;
+
 const DashboardContainer = styled.div`
   max-width: 1200px;
   margin: 2rem auto;
@@ -363,7 +369,9 @@ const Dashboard = () => {
           <h3 style={{ textAlign: 'center' }}>
             Distribuzione Professioni {selectedProfession ? `(Professione: ${selectedProfession})` : ''}
           </h3>
-          <Pie data={pieData} options={pieOptions} />
+          <PieWrapper>
+            <Pie data={pieData} options={pieOptions} />
+          </PieWrapper>
         </ChartColumn>
       </ChartRow>
 

@@ -15,6 +15,12 @@ import { API_BASE_URL } from '../config';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
 
+const PieWrapper = styled.div`
+  width: 420px;
+  height: 420px;
+  margin: 0 auto;
+`;
+
 const DashboardContainer = styled.div`
   max-width: 1200px;
   margin: 2rem auto;
@@ -251,7 +257,7 @@ const PolizzeDashboard = () => {
   return (
     <DashboardContainer>
       <SectionTitle>Dashboard Polizze</SectionTitle>
-      <ResetButton onClick={resetFilters}>Mostra tutti i dati</ResetButton>
+      {/* <ResetButton onClick={resetFilters}>Mostra tutti i dati</ResetButton> */}
       
       {/* Prima Row: Polizze per Prodotto e per Area di Bisogno */}
       <ChartRow>
@@ -261,7 +267,9 @@ const PolizzeDashboard = () => {
         </ChartColumn>
         <ChartColumn>
           <h3 style={{ textAlign: 'center' }}>Polizze per Area di Bisogno</h3>
-          <Pie data={polizzeAreaData} options={polizzeAreaOptions} />
+          <PieWrapper>
+            <Pie data={polizzeAreaData} options={polizzeAreaOptions} />
+          </PieWrapper>
         </ChartColumn>
       </ChartRow>
       
