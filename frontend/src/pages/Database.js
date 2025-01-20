@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { API_BASE_URL } from '../config';
+import EditModal from '../components/EditModal';  
 
 const TableContainer = styled.div`
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 20px;
 `;
@@ -199,6 +200,8 @@ const Database = () => {
   const [sortKey, setSortKey] = useState(null);
   const [sortDirection, setSortDirection] = useState('asc');
 
+  const [selectedClientForEdit, setSelectedClientForEdit] = useState(null);
+
   const [selectedDetails, setSelectedDetails] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [notes, setNotes] = useState([]);
@@ -228,6 +231,7 @@ const Database = () => {
   };
 
   const filteredClienti = clienti.filter(cliente =>
+    cliente.codice_cliente.toString().includes(searchQuery) ||
     cliente.nome.toLowerCase().includes(searchQuery.toLowerCase()) ||
     cliente.cognome.toLowerCase().includes(searchQuery.toLowerCase()) ||
     cliente.professione.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -258,6 +262,14 @@ const Database = () => {
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
     setCurrentPage(1);
+  };
+
+  const openEditModal = (cliente) => {
+    setSelectedClientForEdit(cliente);
+  };
+
+  const closeEditModal = () => {
+    setSelectedClientForEdit(null);
   };
 
   const openDetails = async (codice_cliente) => {
@@ -349,6 +361,7 @@ const Database = () => {
       <StyledTable>
         <thead>
           <tr>
+            <th onClick={() => handleSort('codice_cliente')}>Codice</th>
             <th onClick={() => handleSort('nome')}>Nome</th>
             <th onClick={() => handleSort('cognome')}>Cognome</th>
             <th onClick={() => handleSort('eta')}>Età</th>
@@ -361,6 +374,7 @@ const Database = () => {
         <tbody>
           {currentResults.map((cliente, index) => (
             <tr key={index}>
+              <td>{cliente.codice_cliente}</td>
               <td>{cliente.nome}</td>
               <td>{cliente.cognome}</td>
               <td>{cliente.eta}</td>
@@ -368,7 +382,9 @@ const Database = () => {
               <td>{cliente.professione}</td>
               <td>{cliente.reddito}</td>
               <td>
-                {/* <ActionButton variant="edit">Edit</ActionButton> */}
+                <ActionButton variant="edit" onClick={() => openEditModal(cliente)}>
+                  Edit
+                </ActionButton>
                 <ActionButton variant="details" onClick={() => openDetails(cliente.codice_cliente)}>
                   Details
                 </ActionButton>
@@ -518,6 +534,16 @@ const Database = () => {
           </NoteAddButton>
         </ModalContent>
       </ModalOverlay>
+
+      {selectedClientForEdit && (
+        <EditModal 
+          client={selectedClientForEdit}
+          onClose={closeEditModal}
+          onSave={(updatedClient) => {
+            setClienti(prev => prev.map(c => c.codice_cliente === updatedClient.codice_cliente ? updatedClient : c));
+          }}
+        />
+      )}
     </TableContainer>
   );
 };
