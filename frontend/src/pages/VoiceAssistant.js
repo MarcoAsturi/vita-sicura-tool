@@ -36,7 +36,7 @@ const Section = styled.div`
 
 const SectionTitle = styled.h2`
   margin-bottom: 1rem;
-  color: #007bff;
+  color: rgb(35, 34, 75);
   font-size: 1.75rem;
   text-align: center;
 `;
@@ -59,14 +59,14 @@ const FileInput = styled.input`
 
 const Button = styled.button`
   padding: 0.75rem 1.25rem;
-  background-color: #007bff;
+  background-color: rgb(35, 34, 75);
   color: #fff;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   transition: background 0.2s ease-in-out;
   &:hover {
-    background-color: #0056b3;
+    background-color: rgb(105, 103, 238);
   }
 `;
 

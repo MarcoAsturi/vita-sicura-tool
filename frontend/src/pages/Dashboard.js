@@ -50,13 +50,13 @@ const ResetButton = styled.button`
   display: block;
   margin: 0 auto 2rem auto;
   padding: 8px 16px;
-  background-color: #e74c3c;
+  background-color: rgb(35, 34, 75);
   color: #fff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   &:hover {
-    background-color: #c0392b;
+    background-color: rgb(58, 58, 107);
   }
 `;
 

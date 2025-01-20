@@ -76,7 +76,7 @@ const TextInput = styled.input`
 
 const SendButton = styled.button`
   padding: 0.75rem 1.25rem;
-  background-color: #007bff;
+  background-color: rgb(35, 34, 75);
   border: none;
   color: #fff;
   font-size: 1rem;
@@ -84,7 +84,7 @@ const SendButton = styled.button`
   cursor: pointer;
   transition: background 0.2s ease-in-out;
   &:hover {
-    background-color: #0056b3;
+    background-color: rgb(94, 92, 231);
   }
 `;
 

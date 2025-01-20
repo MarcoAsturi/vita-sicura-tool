@@ -16,10 +16,10 @@ const StyledTable = styled.table`
     padding: 12px 15px;
     border: 1px solid #ddd;
     text-align: left;
-    cursor: pointer; /* rende cliccabili gli header per ordinare */
+    cursor: pointer;
   }
   th {
-    background-color: #34495e;
+    background-color: rgb(35, 34, 75);
     color: #ecf0f1;
   }
   tr:nth-child(even) {
@@ -34,10 +34,7 @@ const ActionButton = styled.button`
   border-radius: 4px;
   cursor: pointer;
   color: #fff;
-  background-color: ${props =>
-    props.variant === "edit" ? "#3498db" :
-    props.variant === "details" ? "#f39c12" :
-    props.variant === "note" ? "#2ecc71" : "#e74c3c"};
+  background-color: rgb(98, 96, 241);
   &:hover {
     opacity: 0.9;
   }
