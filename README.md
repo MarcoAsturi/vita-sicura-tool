@@ -265,6 +265,3 @@ The project follows a microservices architecture with:
 - **GI.A.D.A.**: Voice queries and greater integration with the customer database.
 - **Speech-to-Text**: Support for real-time audio file uploads.
 - **Data Quality**: Addition of further specific validation rules.
-
-## Conclusions
-GenerAI represents a significant innovation for the insurance sector, simplifying data management and enhancing agent efficiency. Current and future features promise to improve service quality, making GenerAI an indispensable tool.
