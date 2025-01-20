@@ -354,7 +354,6 @@ const Dashboard = () => {
 
   return (
     <DashboardContainer>
-      <SectionTitle>Dashboard Clienti</SectionTitle>
       {(selectedAge !== null || selectedProfession !== null || selectedIncomeBin !== null || selectedPropRange !== null || selectedPropDanni !== null) && (
         <ResetButton onClick={resetFilters}>Mostra tutti i dati</ResetButton>
       )}

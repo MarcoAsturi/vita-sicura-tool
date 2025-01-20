@@ -256,7 +256,6 @@ const PolizzeDashboard = () => {
 
   return (
     <DashboardContainer>
-      <SectionTitle>Dashboard Polizze</SectionTitle>
       {/* <ResetButton onClick={resetFilters}>Mostra tutti i dati</ResetButton> */}
       
       {/* Prima Row: Polizze per Prodotto e per Area di Bisogno */}
