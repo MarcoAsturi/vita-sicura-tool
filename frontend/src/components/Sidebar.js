@@ -20,16 +20,16 @@ const SidebarContainer = styled.div`
 
 const StyledLink = styled(NavLink)`
   width: 100%;
-  color: #2c3e50;
+  color: rgb(35, 34, 75);
   padding: 15px 20px;
   text-decoration: none;
   text-align: center;
   &.active {
-    background-color: #34495e;
+    background-color:rgb(35, 34, 75);
     color: #ecf0f1;
   }
   &:hover {
-    background-color: #34495e;
+    background-color: rgb(35, 34, 75);
     color: #ecf0f1;
   }
 `;
