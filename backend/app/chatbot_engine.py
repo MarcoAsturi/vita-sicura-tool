@@ -37,11 +37,15 @@ class AIQueryEngine:
         Linee guida:
         - Sii breve e schematico.
         - Usa la terminologia dei documenti.
-        - Non includere tecnologie non menzionate nei documenti.
+        - Non includere informazioni non menzionate nei documenti.
 
         Esempio:
-        <question>Quale strumento posso utilizzare per produrre eventi di test su kafka?</question>
-        <response>Anemoi è il building block per generare eventi su kafka topic</response>
+        <question>
+            Quali prodotti rientrano nella categoria protezione?
+        </question>
+        <response>
+            I prodotti che rientrano nella categoria protezione sono: "Polizza Salute e Infortuni" e "Assicurazione Casa e Famiglia".
+        </response>
 
         Si inizia!
         """

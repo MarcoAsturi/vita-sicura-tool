@@ -89,7 +89,7 @@ const SendButton = styled.button`
 `;
 
 const cleanBotResponse = (rawText) => {
-  const withoutTags = rawText.replace(/<\/?response>/g, '');
+  const withoutTags = rawText.replace(/<\/?response>/g, '').replace(/<question>.*?<\/question>/g, '');
   // add a newline after each sentence if the next sentence starts with a capital letter
   const formattedText = withoutTags.replace(/\. ([A-Z])/g, '.\n$1');
   return formattedText;
