@@ -41,9 +41,9 @@ const Sidebar = () => {
       <StyledLink to="/home">Home</StyledLink>
       <StyledLink to="/dashboard">Dashboard</StyledLink>
       <StyledLink to="/polizze">Polizze</StyledLink>
-      <StyledLink to="/chatbot">Chatbot</StyledLink>
-      <StyledLink to="/assistente-vocale">Assistente Vocale</StyledLink>
-      <StyledLink to="/database">Database</StyledLink>
+      <StyledLink to="/chatbot">G.I.A.D.A.</StyledLink>
+      <StyledLink to="/assistente-vocale">Assistente STT</StyledLink>
+      <StyledLink to="/database">Clienti</StyledLink>
     </SidebarContainer>
   );
 };
