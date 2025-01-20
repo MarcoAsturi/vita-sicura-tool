@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@tanstack/react-query": "^5.64.2",
     "chart.js": "^4.4.7",
     "cra-template": "1.2.0",
     "react": "^19.0.0",

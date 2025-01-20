@@ -38,6 +38,7 @@ const Sidebar = () => {
   return (
     <SidebarContainer>
       <Logo src="/logoVitaSicura.png" alt="Logo Vita Sicura" />
+      <StyledLink to="/home">Home</StyledLink>
       <StyledLink to="/dashboard">Dashboard</StyledLink>
       <StyledLink to="/polizze">Polizze</StyledLink>
       <StyledLink to="/chatbot">Chatbot</StyledLink>
