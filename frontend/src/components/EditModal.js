@@ -1,4 +1,3 @@
-// src/components/EditModal.js
 import React, { useState } from "react";
 import styled from "styled-components";
 import { API_BASE_URL } from "../config";
@@ -77,7 +76,6 @@ const EditModal = ({ client, onClose, onSave }) => {
         body: JSON.stringify(payload),
       });
       if (!response.ok) {
-        // Qui puoi estrarre ulteriori dettagli dall'errore se l'API li restituisce
         const errorData = await response.json();
         throw new Error(errorData.detail || "Errore nell'aggiornamento");
       }

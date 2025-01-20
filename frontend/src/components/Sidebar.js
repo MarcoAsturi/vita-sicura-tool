@@ -10,7 +10,7 @@ const Logo = styled.img`
 const SidebarContainer = styled.div`
   width: 200px;
   height: 100vh;
-  background-color: #e8f5e9; /* Verde molto chiaro tendente al bianco */
+  background-color:rgb(218, 250, 252);
   padding-top: 20px;
   position: fixed;
   display: flex;
@@ -20,16 +20,16 @@ const SidebarContainer = styled.div`
 
 const StyledLink = styled(NavLink)`
   width: 100%;
-  color: #2c3e50; /* Puoi anche modificare il colore del testo se necessario */
+  color: #2c3e50;
   padding: 15px 20px;
   text-decoration: none;
   text-align: center;
   &.active {
-    background-color: #34495e;  /* Verde scuro per il link attivo */
+    background-color: #34495e;
     color: #ecf0f1;
   }
   &:hover {
-    background-color: #34495e;  /* Verde scuro al passaggio del mouse */
+    background-color: #34495e;
     color: #ecf0f1;
   }
 `;
