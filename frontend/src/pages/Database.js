@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { API_BASE_URL } from '../config';
 
-// Styled Components per la tabella
 const TableContainer = styled.div`
   max-width: 1000px;
   margin: 0 auto;
@@ -16,6 +15,7 @@ const StyledTable = styled.table`
     padding: 12px 15px;
     border: 1px solid #ddd;
     text-align: left;
+    cursor: pointer; /* rende cliccabili gli header per ordinare */
   }
   th {
     background-color: #34495e;
@@ -72,7 +72,7 @@ const SearchInput = styled.input`
   border-radius: 4px;
 `;
 
-// Modal per i dettagli e per le note
+// Modal Components
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -105,7 +105,7 @@ const CloseButton = styled.button`
   float: right;
 `;
 
-// Modal per le note, stile "bigliettini" o post-it
+// Styled Components per il modal delle note
 const NoteCard = styled.div`
   background-color: #fffae6;
   border: 1px solid #f0dca7;
@@ -143,9 +143,51 @@ const NoteInput = styled.textarea`
 const NoteAddButton = styled.button`
   background-color: #2ecc71;
   margin-top: 0.5rem;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
   &:hover {
     background-color: #27ae60;
   }
+`;
+
+// Componenti di supporto per i dettagli
+const ClientDetailsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+`;
+
+const DetailItem = styled.div`
+  background: #f9f9f9;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+`;
+
+const Section = styled.div`
+  margin-bottom: 20px;
+`;
+
+const SectionTitle = styled.h4`
+  margin-bottom: 10px;
+  color: #007bff;
+`;
+
+const List = styled.ul`
+  list-style: none;
+  padding: 0;
+`;
+
+const ListItem = styled.li`
+  background: #f1f8ff;
+  margin-bottom: 8px;
+  padding: 10px;
+  border: 1px solid #cce5ff;
+  border-radius: 4px;
 `;
 
 const Database = () => {
@@ -153,15 +195,14 @@ const Database = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const resultsPerPage = 20;
-  
-  // Stato per il modal dei dettagli del cliente
+
+  const [sortKey, setSortKey] = useState(null);
+  const [sortDirection, setSortDirection] = useState('asc');
+
   const [selectedDetails, setSelectedDetails] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
-  
-  // Stato per il modal delle note
   const [notes, setNotes] = useState([]);
   const [showNotesModal, setShowNotesModal] = useState(false);
-  // Stato per il contenuto della nuova nota
   const [newNoteText, setNewNoteText] = useState('');
 
   useEffect(() => {
@@ -177,21 +218,41 @@ const Database = () => {
     fetchClienti();
   }, []);
 
+  const handleSort = (key) => {
+    if (sortKey === key) {
+      setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortKey(key);
+      setSortDirection('asc');
+    }
+  };
+
   const filteredClienti = clienti.filter(cliente =>
     cliente.nome.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    cliente.cognome.toLowerCase().includes(searchQuery.toLowerCase())
+    cliente.cognome.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    cliente.professione.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    cliente.luogo_di_residenza.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const sortedClienti = sortKey
+    ? [...filteredClienti].sort((a, b) => {
+        if (a[sortKey] < b[sortKey]) return sortDirection === 'asc' ? -1 : 1;
+        if (a[sortKey] > b[sortKey]) return sortDirection === 'asc' ? 1 : -1;
+        return 0;
+      })
+    : filteredClienti;
+
   const indexOfLastResult = currentPage * resultsPerPage;
   const indexOfFirstResult = indexOfLastResult - resultsPerPage;
-  const currentResults = filteredClienti.slice(indexOfFirstResult, indexOfLastResult);
-  const totalPages = Math.ceil(filteredClienti.length / resultsPerPage);
+  const currentResults = sortedClienti.slice(indexOfFirstResult, indexOfLastResult);
+  const totalPages = Math.ceil(sortedClienti.length / resultsPerPage);
 
   const goToNextPage = () => {
-    setCurrentPage(prevPage => Math.min(prevPage + 1, totalPages));
+    setCurrentPage(prev => Math.min(prev + 1, totalPages));
   };
 
   const goToPrevPage = () => {
-    setCurrentPage(prevPage => Math.max(prevPage - 1, 1));
+    setCurrentPage(prev => Math.max(prev - 1, 1));
   };
 
   const handleSearchChange = (e) => {
@@ -199,13 +260,10 @@ const Database = () => {
     setCurrentPage(1);
   };
 
-  // Funzione per aprire il modal con i dettagli del cliente
   const openDetails = async (codice_cliente) => {
     try {
-      console.log("Richiesta dettagli per cliente:", codice_cliente);
       const response = await fetch(`${API_BASE_URL}/clienti/${codice_cliente}`);
       const data = await response.json();
-      console.log("Dettagli ricevuti:", data);
       setSelectedDetails(data);
       setShowDetailsModal(true);
     } catch (error) {
@@ -218,15 +276,11 @@ const Database = () => {
     setSelectedDetails(null);
   };
 
-  // Funzione per aprire il modal con le note del cliente
   const openNotes = async (codice_cliente) => {
     try {
-      // Recupera i dettagli del cliente (in modo simile a openDetails)
       const clientResponse = await fetch(`${API_BASE_URL}/clienti/${codice_cliente}`);
       const clientData = await clientResponse.json();
       setSelectedDetails(clientData);
-  
-      // Recupera le note associate al cliente
       const response = await fetch(`${API_BASE_URL}/clienti/${codice_cliente}/note`);
       const data = await response.json();
       setNotes(data);
@@ -242,26 +296,25 @@ const Database = () => {
     setNewNoteText('');
   };
 
-  // Funzione per eliminare una nota
   const deleteNote = async (id_nota) => {
     if (!window.confirm("Sei sicuro di voler eliminare questa nota?")) return;
     try {
-      const response = await fetch(`${API_BASE_URL}/note/${id_nota}`, {
-        method: "DELETE"
-      });
+      const response = await fetch(`${API_BASE_URL}/note/${id_nota}`, { method: "DELETE" });
       if (!response.ok) {
         throw new Error("Errore nell'eliminazione della nota");
       }
-      setNotes(prevNotes => prevNotes.filter(note => note.id_nota !== id_nota));
+      setNotes(prev => prev.filter(note => note.id_nota !== id_nota));
     } catch (error) {
       console.error("Errore:", error);
     }
   };
 
-  // Funzione per aggiungere una nuova nota
   const addNote = async (codice_cliente) => {
     if (!newNoteText.trim()) return;
-    // Assumi che i dettagli del cliente siano già in selectedDetails.cliente.
+    if (!selectedDetails?.cliente) {
+      alert("Dettagli cliente non disponibili. Riapri il modal 'Note' per aggiornare i dati.");
+      return;
+    }
     const payload = {
       nome: selectedDetails.cliente.nome,
       cognome: selectedDetails.cliente.cognome,
@@ -270,32 +323,25 @@ const Database = () => {
     try {
       const response = await fetch(`${API_BASE_URL}/clienti/${codice_cliente}/note`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
-      if (!response.ok) {
-        throw new Error("Errore nell'aggiunta della nota");
-      }
+      if (!response.ok) throw new Error("Errore nell'aggiunta della nota");
       const data = await response.json();
-      // Aggiungi la nuova nota alla lista
-      setNotes(prevNotes => [...prevNotes, data]);
+      setNotes(prev => [...prev, data]);
       setNewNoteText('');
     } catch (error) {
       console.error("Errore:", error);
       alert("Si è verificato un errore durante l'aggiunta della nota.");
     }
   };
-  
 
   return (
     <TableContainer>
-      <h2>Database</h2>
       <SearchContainer>
         <SearchInput
           type="text"
-          placeholder="Cerca per nome o cognome..."
+          placeholder="Cerca..."
           value={searchQuery}
           onChange={handleSearchChange}
         />
@@ -303,12 +349,12 @@ const Database = () => {
       <StyledTable>
         <thead>
           <tr>
-            <th>Nome</th>
-            <th>Cognome</th>
-            <th>Età</th>
-            <th>Luogo di Residenza</th>
-            <th>Professione</th>
-            <th>Reddito</th>
+            <th onClick={() => handleSort('nome')}>Nome</th>
+            <th onClick={() => handleSort('cognome')}>Cognome</th>
+            <th onClick={() => handleSort('eta')}>Età</th>
+            <th onClick={() => handleSort('luogo_di_residenza')}>Luogo di Residenza</th>
+            <th onClick={() => handleSort('professione')}>Professione</th>
+            <th onClick={() => handleSort('reddito')}>Reddito</th>
             <th>Azioni</th>
           </tr>
         </thead>
@@ -322,7 +368,7 @@ const Database = () => {
               <td>{cliente.professione}</td>
               <td>{cliente.reddito}</td>
               <td>
-                <ActionButton variant="edit">Edit</ActionButton>
+                {/* <ActionButton variant="edit">Edit</ActionButton> */}
                 <ActionButton variant="details" onClick={() => openDetails(cliente.codice_cliente)}>
                   Details
                 </ActionButton>
@@ -349,51 +395,90 @@ const Database = () => {
         <ModalContent>
           <CloseButton onClick={closeDetailsModal}>Chiudi</CloseButton>
           <h3>Dettagli Cliente</h3>
-          {selectedDetails ? (
+          {selectedDetails && selectedDetails.cliente ? (
             <div>
-              <p><strong>Nome:</strong> {selectedDetails.cliente.nome}</p>
-              <p><strong>Cognome:</strong> {selectedDetails.cliente.cognome}</p>
-              <p><strong>Età:</strong> {selectedDetails.cliente.eta}</p>
-              <p><strong>Luogo di Nascita:</strong> {selectedDetails.cliente.luogo_di_nascita}</p>
-              <p><strong>Luogo di Residenza:</strong> {selectedDetails.cliente.luogo_di_residenza}</p>
-              <p><strong>Professione:</strong> {selectedDetails.cliente.professione}</p>
-              <p><strong>Reddito:</strong> {selectedDetails.cliente.reddito}</p>
-              <h4>Polizze</h4>
-              {selectedDetails.polizze?.length > 0 ? (
-                <ul>
-                  {selectedDetails.polizze.map(polizza => (
-                    <li key={polizza.id}>
-                      <strong>Prodotto:</strong> {polizza.prodotto}, <strong>Area di Bisogno:</strong> {polizza.area_di_bisogno}, <strong>Data:</strong> {polizza.data_di_emissione}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>Nessuna polizza trovata</p>
-              )}
-              <h4>Reclami e Info</h4>
-              {selectedDetails.reclami_info?.length > 0 ? (
-                <ul>
-                  {selectedDetails.reclami_info.map(item => (
-                    <li key={item.id}>
-                      <strong>Prodotto:</strong> {item.prodotto}, <strong>Area:</strong> {item.area_di_bisogno}, <strong>Info:</strong> {item.reclami_e_info}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>Nessun reclamo/info trovato</p>
-              )}
-              <h4>Sinistri</h4>
-              {selectedDetails.sinistri?.length > 0 ? (
-                <ul>
-                  {selectedDetails.sinistri.map(sinistro => (
-                    <li key={sinistro.id}>
-                      <strong>Prodotto:</strong> {sinistro.prodotto}, <strong>Area:</strong> {sinistro.area_di_bisogno}, <strong>Sinistro:</strong> {sinistro.sinistro}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>Nessun sinistro trovato</p>
-              )}
+              <ClientDetailsGrid>
+                <DetailItem><strong>Codice Cliente:</strong> {selectedDetails.cliente.codice_cliente}</DetailItem>
+                <DetailItem><strong>Nome:</strong> {selectedDetails.cliente.nome}</DetailItem>
+                <DetailItem><strong>Cognome:</strong> {selectedDetails.cliente.cognome}</DetailItem>
+                <DetailItem><strong>Età:</strong> {selectedDetails.cliente.eta}</DetailItem>
+                <DetailItem><strong>Luogo di Nascita:</strong> {selectedDetails.cliente.luogo_di_nascita}</DetailItem>
+                <DetailItem><strong>Luogo di Residenza:</strong> {selectedDetails.cliente.luogo_di_residenza}</DetailItem>
+                <DetailItem><strong>Professione:</strong> {selectedDetails.cliente.professione}</DetailItem>
+                <DetailItem><strong>Reddito:</strong> {selectedDetails.cliente.reddito}</DetailItem>
+                <DetailItem><strong>Reddito Familiare:</strong> {selectedDetails.cliente.reddito_familiare}</DetailItem>
+                <DetailItem><strong>Numero Figli:</strong> {selectedDetails.cliente.numero_figli}</DetailItem>
+                <DetailItem><strong>Anzianità con la Compagnia:</strong> {selectedDetails.cliente.anzianita_con_la_compagnia}</DetailItem>
+                <DetailItem><strong>Stato Civile:</strong> {selectedDetails.cliente.stato_civile}</DetailItem>
+                <DetailItem><strong>Numero Familiari a Carico:</strong> {selectedDetails.cliente.numero_familiari_a_carico}</DetailItem>
+                <DetailItem><strong>Reddito Stimato:</strong> {selectedDetails.cliente.reddito_stimato}</DetailItem>
+                <DetailItem><strong>Patrimonio Finanziario Stimato:</strong> {selectedDetails.cliente.patrimonio_finanziario_stimato}</DetailItem>
+                <DetailItem><strong>Patrimonio Reale Stimato:</strong> {selectedDetails.cliente.patrimonio_reale_stimato}</DetailItem>
+                <DetailItem><strong>Consumi Stimati:</strong> {selectedDetails.cliente.consumi_stimati}</DetailItem>
+                <DetailItem><strong>Propensione Acquisto Prodotti Vita:</strong> {selectedDetails.cliente.propensione_acquisto_prodotti_vita}</DetailItem>
+                <DetailItem><strong>Propensione Acquisto Prodotti Danni:</strong> {selectedDetails.cliente.propensione_acquisto_prodotti_danni}</DetailItem>
+                <DetailItem><strong>Valore Immobiliare Medio:</strong> {selectedDetails.cliente.valore_immobiliare_medio}</DetailItem>
+                <DetailItem><strong>Probabilità Furti Stimata:</strong> {selectedDetails.cliente.probabilita_furti_stimata}</DetailItem>
+                <DetailItem><strong>Probabilità Rapine Stimata:</strong> {selectedDetails.cliente.probabilita_rapine_stimata}</DetailItem>
+                <DetailItem><strong>Zona di Residenza:</strong> {selectedDetails.cliente.zona_di_residenza}</DetailItem>
+                <DetailItem><strong>Agenzia:</strong> {selectedDetails.cliente.agenzia}</DetailItem>
+              </ClientDetailsGrid>
+              
+              {/* Sezioni per Polizze, Reclami e Sinistri */}
+              <Section>
+                <SectionTitle>Polizze</SectionTitle>
+                {selectedDetails.polizze && selectedDetails.polizze.length > 0 ? (
+                  <List>
+                    {selectedDetails.polizze.map(polizza => (
+                      <ListItem key={polizza.id}>
+                        <strong>Prodotto:</strong> {polizza.prodotto}<br />
+                        <strong>Area di Bisogno:</strong> {polizza.area_di_bisogno}<br />
+                        <strong>Data di Emissione:</strong> {polizza.data_di_emissione}<br />
+                        <strong>Premio Ricorrente:</strong> {polizza.premio_ricorrente}<br />
+                        <strong>Premio Unico:</strong> {polizza.premio_unico}<br />
+                        <strong>Capitale Rivalutato:</strong> {polizza.capitale_rivalutato}<br />
+                        <strong>Massimale:</strong> {polizza.massimale}
+                      </ListItem>
+                    ))}
+                  </List>
+                ) : (
+                  <p>Nessuna polizza trovata</p>
+                )}
+              </Section>
+              
+              <Section>
+                <SectionTitle>Reclami e Informazioni</SectionTitle>
+                {selectedDetails.reclami_info && selectedDetails.reclami_info.length > 0 ? (
+                  <List>
+                    {selectedDetails.reclami_info.map(item => (
+                      <ListItem key={item.id}>
+                        <strong>Prodotto:</strong> {item.prodotto}<br />
+                        <strong>Area di Bisogno:</strong> {item.area_di_bisogno}<br />
+                        <strong>Reclami e Informazioni:</strong> {item.reclami_e_info}
+                      </ListItem>
+                    ))}
+                  </List>
+                ) : (
+                  <p>Nessun reclamo o informazione trovato</p>
+                )}
+              </Section>
+              
+              <Section>
+                <SectionTitle>Sinistri</SectionTitle>
+                {selectedDetails.sinistri && selectedDetails.sinistri.length > 0 ? (
+                  <List>
+                    {selectedDetails.sinistri.map(sinistro => (
+                      <ListItem key={sinistro.id}>
+                        <strong>Prodotto:</strong> {sinistro.prodotto}<br />
+                        <strong>Area di Bisogno:</strong> {sinistro.area_di_bisogno}<br />
+                        <strong>Sinistro:</strong> {sinistro.sinistro}
+                      </ListItem>
+                    ))}
+                  </List>
+                ) : (
+                  <p>Nessun sinistro trovato</p>
+                )}
+              </Section>
             </div>
           ) : (
             <p>Caricamento dettagli...</p>
@@ -416,14 +501,19 @@ const Database = () => {
           ) : (
             <p style={{ textAlign: 'center' }}>Nessuna nota trovata</p>
           )}
-          {/* Nuovo slot per aggiungere una nota */}
           <h4>Aggiungi una nuova nota:</h4>
           <NoteInput 
             value={newNoteText} 
             onChange={(e) => setNewNoteText(e.target.value)} 
             placeholder="Scrivi qui la tua nota..." 
           />
-          <NoteAddButton onClick={() => addNote(selectedDetails.cliente.codice_cliente)}>
+          <NoteAddButton onClick={() => {
+            if(selectedDetails?.cliente?.codice_cliente){
+              addNote(selectedDetails.cliente.codice_cliente);
+            } else {
+              alert("Nessun cliente selezionato per aggiungere la nota");
+            }
+          }}>
             Aggiungi Nota
           </NoteAddButton>
         </ModalContent>
