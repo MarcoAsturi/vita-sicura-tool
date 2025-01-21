@@ -88,9 +88,11 @@ const Home = () => {
         tramite dashboard interattive e funzionalità integrate.
       </Presentation>
       <Warning>
-        <strong>ATTENZIONE:</strong> Dopo il primo avvio l'accesso alle funzionalità potrebbe
-        richiedere del tempo (circa 60 secondi).<br /> Attendere il cambio di stato (simbolo verde con scritta 'GO') prima di
-        navigare.<br /> Il caricamento dei grafici e delle tabelle potrebbe richiedere una decina di secondi.
+        <strong>ATTENZIONE:</strong> <br /> - Dopo il primo avvio l'accesso alle funzionalità potrebbe
+        richiedere del tempo (circa 120 secondi).<br /> - Attendere il cambio di stato (simbolo verde con scritta 'GO') prima di
+        navigare.<br /> - Se il simbolo dello stato rimane rosso con scritta 'WAIT' chiudere la pagina e riapirla dopo 2/3 minuti circa.
+        <br /> - Il caricamento dei grafici e delle tabelle sugli altri TAB potrebbe richiedere una decina di secondi anche dopo che l'applicazione 
+        si è avviata correttamente.
       </Warning>
       <TrafficLight status={status}>
         {status === "ok" ? "GO" : "WAIT"}
