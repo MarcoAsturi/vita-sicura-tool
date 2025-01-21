@@ -71,7 +71,7 @@ const Home = () => {
       }
       return res.json();
     },
-    refetchInterval: 10000,
+    refetchInterval: 5000,
     retry: false,
   });
 

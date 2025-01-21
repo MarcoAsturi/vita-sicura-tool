@@ -7,6 +7,11 @@ Vita Sicura AI is an innovative tool designed to support Vita Sicura (fictional 
 - **Operational Management**: Support with conversational tools (chatbot and speech-to-text) for more efficient customer interactions.
 - **Interactive Dashboards**: Detailed analyses for a deep understanding of customer data and business operations.
 
+## Technologies and Libraries
+- **Frontend**: React.js, Chart.js, Styled Components.
+- **Backend**: FastAPI, PostgreSQL.
+- **AI**: OpenAI API (gpt-3.5-turbo), Vosk, LlamaIndex.
+
 ## Main Features
 ### 1. **Dashboard and Database**
 - Interactive data visualization on customers, policies, claims, and incidents.
@@ -125,11 +130,6 @@ The voice assistant allows agents to:
 - **Descriptive**: Charts and statistics on customer data, such as age distribution, incomes, and policies.
 - **Predictive**: Models estimating the likelihood of future claims or incidents using machine learning algorithms.
 
-## Technologies and Libraries
-- **Frontend**: React.js, Chart.js, Styled Components.
-- **Backend**: FastAPI, PostgreSQL.
-- **AI**: OpenAI API (gpt-3.5-turbo), Vosk, LlamaIndex.
-
 ## Backend API Endpoints
 ### Endpoints List
 - **GET /clienti**: Fetch all customers.
@@ -205,7 +205,7 @@ The project follows a microservices architecture with:
 ### Prerequisites
 - Node.js (>=16.x)
 - Python (>=3.10)
-- PostgreSQL
+- PostgreSQL (16.6)
 
 ### Installation
 1. **Clone the repository**:
@@ -257,11 +257,8 @@ The project follows a microservices architecture with:
          npm start
          ```
 
-## Issues and Future Implementations
-### Issues
-- Limitations in predictive models on incidents due to insufficient historical data.
+## Future Implementations
 
-### Future Implementations
 - **GI.A.D.A.**: Voice queries and greater integration with the customer database.
 - **Speech-to-Text**: Support for real-time audio file uploads.
 - **Data Quality**: Addition of further specific validation rules.
