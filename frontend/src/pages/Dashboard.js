@@ -17,7 +17,6 @@ import 'rc-slider/assets/index.css';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
-// Styled components per la dashboard e per il layout a colonne
 const DashboardContainer = styled.div`
   max-width: 1400px;
   margin: 2rem auto;
@@ -81,6 +80,19 @@ const ResetButton = styled.button`
   }
 `;
 
+// Funzione helper per la gestione dei checkbox
+const handleCheckboxChange = (e, value, selectedArray, setSelectedArray) => {
+  if (e.target.checked) {
+    // Aggiunge l'opzione se non è già presente
+    if (!selectedArray.includes(value)) {
+      setSelectedArray([...selectedArray, value]);
+    }
+  } else {
+    // Rimuove l'opzione se deselezionata
+    setSelectedArray(selectedArray.filter(item => item !== value));
+  }
+};
+
 const FilterPanel = ({
   clienti,
   selectedAgeRange,
@@ -98,11 +110,14 @@ const FilterPanel = ({
   propVitaLabels,
   propDanniLabels,
 }) => {
-  const uniqueAges = [...new Set(clienti.map((cliente) => cliente.eta))].sort((a, b) => a - b);
-  const uniqueProfessions = [...new Set(clienti.map((cliente) => cliente.professione))].filter(Boolean);
+  // Calcola età min e max dai dati
+  const uniqueAges = [...new Set(clienti.map(cliente => cliente.eta))].sort((a, b) => a - b);
+  // Calcola le opzioni uniche per Professione
+  const uniqueProfessions = [...new Set(clienti.map(cliente => cliente.professione))].filter(Boolean);
 
   return (
     <div>
+      {/* Filtro per età: utilizzo di uno slider */}
       <div style={{ marginBottom: '1rem' }}>
         <label>Età:</label>
         <br />
@@ -122,70 +137,75 @@ const FilterPanel = ({
           </div>
         )}
       </div>
+
+      {/* Filtro per Professione con checkbox */}
       <div style={{ marginBottom: '1rem' }}>
         <label>Professione:</label>
         <br />
-        <select
-          value={selectedProfession || ''}
-          onChange={(e) => setSelectedProfession(e.target.value || null)}
-          style={{ width: '100%', padding: '4px' }}
-        >
-          <option value="">Tutte</option>
-          {uniqueProfessions.map((prof) => (
-            <option key={prof} value={prof}>
-              {prof}
-            </option>
-          ))}
-        </select>
+        {uniqueProfessions.map(prof => (
+          <div key={prof}>
+            <input
+              type="checkbox"
+              id={`prof-${prof}`}
+              checked={selectedProfession.includes(prof)}
+              onChange={(e) => handleCheckboxChange(e, prof, selectedProfession, setSelectedProfession)}
+            />
+            <label htmlFor={`prof-${prof}`}>{prof}</label>
+          </div>
+        ))}
       </div>
+
+      {/* Filtro per Reddito con checkbox */}
       <div style={{ marginBottom: '1rem' }}>
         <label>Reddito:</label>
         <br />
-        <select
-          value={selectedIncomeBin || ''}
-          onChange={(e) => setSelectedIncomeBin(e.target.value || null)}
-          style={{ width: '100%', padding: '4px' }}
-        >
-          <option value="">Tutte</option>
-          {incomeLabels.map((label) => (
-            <option key={label} value={label}>
-              {label}
-            </option>
-          ))}
-        </select>
+        {incomeLabels.map(label => (
+          <div key={label}>
+            <input
+              type="checkbox"
+              id={`income-${label}`}
+              checked={selectedIncomeBin.includes(label)}
+              onChange={(e) => handleCheckboxChange(e, label, selectedIncomeBin, setSelectedIncomeBin)}
+            />
+            <label htmlFor={`income-${label}`}>{label}</label>
+          </div>
+        ))}
       </div>
+
+      {/* Filtro per Propensione Prodotti Vita con checkbox */}
       <div style={{ marginBottom: '1rem' }}>
         <label>Propensione Prodotti Vita:</label>
         <br />
-        <select
-          value={selectedPropRange || ''}
-          onChange={(e) => setSelectedPropRange(e.target.value || null)}
-          style={{ width: '100%', padding: '4px' }}
-        >
-          <option value="">Tutte</option>
-          {propVitaLabels.map((label) => (
-            <option key={label} value={label}>
-              {label}
-            </option>
-          ))}
-        </select>
+        {propVitaLabels.map(label => (
+          <div key={label}>
+            <input
+              type="checkbox"
+              id={`propVita-${label}`}
+              checked={selectedPropRange.includes(label)}
+              onChange={(e) => handleCheckboxChange(e, label, selectedPropRange, setSelectedPropRange)}
+            />
+            <label htmlFor={`propVita-${label}`}>{label}</label>
+          </div>
+        ))}
       </div>
+
+      {/* Filtro per Propensione Prodotti Danni con checkbox */}
       <div style={{ marginBottom: '1rem' }}>
         <label>Propensione Prodotti Danni:</label>
         <br />
-        <select
-          value={selectedPropDanni || ''}
-          onChange={(e) => setSelectedPropDanni(e.target.value || null)}
-          style={{ width: '100%', padding: '4px' }}
-        >
-          <option value="">Tutte</option>
-          {propDanniLabels.map((label) => (
-            <option key={label} value={label}>
-              {label}
-            </option>
-          ))}
-        </select>
+        {propDanniLabels.map(label => (
+          <div key={label}>
+            <input
+              type="checkbox"
+              id={`propDanni-${label}`}
+              checked={selectedPropDanni.includes(label)}
+              onChange={(e) => handleCheckboxChange(e, label, selectedPropDanni, setSelectedPropDanni)}
+            />
+            <label htmlFor={`propDanni-${label}`}>{label}</label>
+          </div>
+        ))}
       </div>
+
       <ResetButton onClick={resetFilters}>Reset Filtri</ResetButton>
     </div>
   );
@@ -193,12 +213,12 @@ const FilterPanel = ({
 
 const Dashboard = () => {
   const [clienti, setClienti] = useState([]);
-
+  // Stato per lo slider dell'età (range) e per i filtri multi-select (array)
   const [selectedAgeRange, setSelectedAgeRange] = useState(null);
-  const [selectedProfession, setSelectedProfession] = useState(null);
-  const [selectedIncomeBin, setSelectedIncomeBin] = useState(null);
-  const [selectedPropRange, setSelectedPropRange] = useState(null);
-  const [selectedPropDanni, setSelectedPropDanni] = useState(null);
+  const [selectedProfession, setSelectedProfession] = useState([]);
+  const [selectedIncomeBin, setSelectedIncomeBin] = useState([]);
+  const [selectedPropRange, setSelectedPropRange] = useState([]);
+  const [selectedPropDanni, setSelectedPropDanni] = useState([]);
 
   const incomeBins = [0, 20000, 40000, 60000, 80000, 100000, 120000, Infinity];
   const incomeLabels = incomeBins.slice(0, -1).map((bin, idx) => {
@@ -219,9 +239,8 @@ const Dashboard = () => {
         }
         const data = await response.json();
         setClienti(data);
-
         if (data && data.length > 0) {
-          const ages = data.map((cliente) => cliente.eta);
+          const ages = data.map(cliente => cliente.eta);
           const minAge = Math.min(...ages);
           const maxAge = Math.max(...ages);
           setSelectedAgeRange([minAge, maxAge]);
@@ -233,45 +252,47 @@ const Dashboard = () => {
     fetchClienti();
   }, []);
 
+  // Funzione di filtraggio: per ogni filtro multi-select, se l'array non è vuoto si verifica se il valore del cliente è incluso
   const getFilteredClienti = () => {
     let data = clienti;
     if (selectedAgeRange !== null) {
-      data = data.filter(
-        (cliente) =>
-          cliente.eta >= selectedAgeRange[0] && cliente.eta <= selectedAgeRange[1]
+      data = data.filter(cliente =>
+        cliente.eta >= selectedAgeRange[0] && cliente.eta <= selectedAgeRange[1]
       );
     }
-    if (selectedProfession !== null) {
-      data = data.filter((cliente) => cliente.professione === selectedProfession);
+    if (selectedProfession.length > 0) {
+      data = data.filter(cliente => selectedProfession.includes(cliente.professione));
     }
-    if (selectedIncomeBin !== null) {
-      const parts = selectedIncomeBin.split('-');
-      const low = Number(parts[0]);
-      const high = parts[1] === '+' ? Infinity : Number(parts[1]);
-      data = data.filter(
-        (cliente) =>
-          cliente.reddito >= low &&
-          (high === Infinity ? true : cliente.reddito < high)
+    if (selectedIncomeBin.length > 0) {
+      data = data.filter(cliente =>
+        selectedIncomeBin.some(binString => {
+          const parts = binString.split('-');
+          const low = Number(parts[0]);
+          const high = parts[1] === '+' ? Infinity : Number(parts[1]);
+          return cliente.reddito >= low && (high === Infinity ? true : cliente.reddito < high);
+        })
       );
     }
-    if (selectedPropRange !== null) {
-      const [lowStr, highStr] = selectedPropRange.split('-').map((s) => s.trim());
-      const low = Number(lowStr);
-      const high = Number(highStr);
-      data = data.filter(
-        (cliente) =>
-          Number(cliente.propensione_acquisto_prodotti_vita) >= low &&
-          Number(cliente.propensione_acquisto_prodotti_vita) < high
+    if (selectedPropRange.length > 0) {
+      data = data.filter(cliente =>
+        selectedPropRange.some(rangeString => {
+          const [lowStr, highStr] = rangeString.split('-').map(s => s.trim());
+          const low = Number(lowStr);
+          const high = Number(highStr);
+          return Number(cliente.propensione_acquisto_prodotti_vita) >= low &&
+                 Number(cliente.propensione_acquisto_prodotti_vita) < high;
+        })
       );
     }
-    if (selectedPropDanni !== null) {
-      const [lowStr, highStr] = selectedPropDanni.split('-').map((s) => s.trim());
-      const low = Number(lowStr);
-      const high = Number(highStr);
-      data = data.filter(
-        (cliente) =>
-          Number(cliente.propensione_acquisto_prodotti_danni) >= low &&
-          Number(cliente.propensione_acquisto_prodotti_danni) < high
+    if (selectedPropDanni.length > 0) {
+      data = data.filter(cliente =>
+        selectedPropDanni.some(rangeString => {
+          const [lowStr, highStr] = rangeString.split('-').map(s => s.trim());
+          const low = Number(lowStr);
+          const high = Number(highStr);
+          return Number(cliente.propensione_acquisto_prodotti_danni) >= low &&
+                 Number(cliente.propensione_acquisto_prodotti_danni) < high;
+        })
       );
     }
     return data;
@@ -281,45 +302,33 @@ const Dashboard = () => {
 
   // --- Grafico: Distribuzione Età ---
   const ageCounts = {};
-  filteredData.forEach((cliente) => {
+  filteredData.forEach(cliente => {
     const age = cliente.eta;
     ageCounts[age] = (ageCounts[age] || 0) + 1;
   });
-  const uniqueAgesForChart = Object.keys(ageCounts)
-    .map(Number)
-    .sort((a, b) => a - b);
-  const ageCountsArray = uniqueAgesForChart.map((age) => ageCounts[age]);
+  const uniqueAgesForChart = Object.keys(ageCounts).map(Number).sort((a, b) => a - b);
+  const ageCountsArray = uniqueAgesForChart.map(age => ageCounts[age]);
   const ageData = {
     labels: uniqueAgesForChart,
-    datasets: [
-      {
-        label: 'Numero di clienti',
-        data: ageCountsArray,
-        backgroundColor: 'rgba(75, 192, 192, 0.6)',
-      },
-    ],
+    datasets: [{
+      label: 'Numero di clienti',
+      data: ageCountsArray,
+      backgroundColor: 'rgba(75, 192, 192, 0.6)',
+    }]
   };
 
   const ageOptions = {
-    onClick: (event, elements, chart) => {
-      if (elements.length > 0) {
-        // Qui potresti gestire, ad esempio, la selezione di un singolo valore
-      }
-    },
     responsive: true,
-    plugins: {
-      legend: { position: 'top' },
-      title: { display: false },
-    },
+    plugins: { legend: { position: 'top' }, title: { display: false } },
     scales: {
       x: { title: { display: true, text: 'Età' } },
-      y: { title: { display: true, text: 'Numero di clienti' }, beginAtZero: true },
-    },
+      y: { title: { display: true, text: 'Numero di clienti' }, beginAtZero: true }
+    }
   };
 
   // --- Grafico: Distribuzione Professioni ---
   const professionCounts = {};
-  filteredData.forEach((cliente) => {
+  filteredData.forEach(cliente => {
     const prof = cliente.professione;
     if (prof) {
       professionCounts[prof] = (professionCounts[prof] || 0) + 1;
@@ -327,46 +336,26 @@ const Dashboard = () => {
   });
   const pieData = {
     labels: Object.keys(professionCounts),
-    datasets: [
-      {
-        data: Object.values(professionCounts),
-        backgroundColor: [
-          '#FF6384',
-          '#36A2EB',
-          '#FFCE56',
-          '#8e44ad',
-          '#2980b9',
-          '#27ae60',
-          '#e67e22',
-          '#e74c3c',
-          '#1abc9c',
-          '#f1c40f',
-          '#2ecc71',
-        ],
-      },
-    ],
+    datasets: [{
+      data: Object.values(professionCounts),
+      backgroundColor: [
+        '#FF6384', '#36A2EB', '#FFCE56', '#8e44ad', '#2980b9', 
+        '#27ae60', '#e67e22', '#e74c3c', '#1abc9c', '#f1c40f', '#2ecc71'
+      ]
+    }]
   };
   const pieOptions = {
-    onClick: (event, elements, chart) => {
-      if (elements.length > 0) {
-        const index = elements[0].index;
-        const prof = chart.data.labels[index];
-        setSelectedProfession(prof);
-      }
-    },
     responsive: true,
-    plugins: { legend: { position: 'bottom' } },
+    plugins: { legend: { position: 'bottom' } }
   };
 
   // --- Grafico: Distribuzione Reddito ---
   const incomeCounts = new Array(incomeLabels.length).fill(0);
-  filteredData.forEach((cliente) => {
+  filteredData.forEach(cliente => {
     const income = cliente.reddito;
-    const binIdx = incomeBins.findIndex(
-      (bound, idx) =>
-        idx < incomeBins.length - 1 &&
-        income >= bound &&
-        income < incomeBins[idx + 1]
+    const binIdx = incomeBins.findIndex((bound, idx) =>
+      idx < incomeBins.length - 1 &&
+      income >= bound && income < incomeBins[idx + 1]
     );
     if (binIdx !== -1) {
       incomeCounts[binIdx]++;
@@ -374,40 +363,29 @@ const Dashboard = () => {
   });
   const incomeData = {
     labels: incomeLabels,
-    datasets: [
-      {
-        label: 'Numero di clienti',
-        data: incomeCounts,
-        backgroundColor: 'rgba(153, 102, 255, 0.6)',
-      },
-    ],
+    datasets: [{
+      label: 'Numero di clienti',
+      data: incomeCounts,
+      backgroundColor: 'rgba(153, 102, 255, 0.6)',
+    }]
   };
   const incomeOptions = {
-    onClick: (event, elements, chart) => {
-      if (elements.length > 0) {
-        const index = elements[0].index;
-        const bin = chart.data.labels[index];
-        setSelectedIncomeBin(bin);
-      }
-    },
     responsive: true,
     plugins: { legend: { position: 'top' }, title: { display: false } },
     scales: {
       x: { title: { display: true, text: 'Fascia di Reddito' } },
-      y: { title: { display: true, text: 'Numero di clienti' }, beginAtZero: true },
-    },
+      y: { title: { display: true, text: 'Numero di clienti' }, beginAtZero: true }
+    }
   };
 
-  // --- Grafico: Distribuzione Propensione Acquisto Prodotti Vita ---
+  // --- Grafico: Distribuzione Propensione Prodotti Vita ---
   const propVitaCounts = new Array(propVitaLabels.length).fill(0);
-  filteredData.forEach((cliente) => {
+  filteredData.forEach(cliente => {
     const prop = Number(cliente.propensione_acquisto_prodotti_vita);
     if (!isNaN(prop)) {
-      const binIdx = propVitaBins.findIndex(
-        (bound, idx) =>
-          idx < propVitaBins.length - 1 &&
-          prop >= bound &&
-          prop < propVitaBins[idx + 1]
+      const binIdx = propVitaBins.findIndex((bound, idx) =>
+        idx < propVitaBins.length - 1 &&
+        prop >= bound && prop < propVitaBins[idx + 1]
       );
       if (binIdx !== -1) {
         propVitaCounts[binIdx]++;
@@ -416,40 +394,29 @@ const Dashboard = () => {
   });
   const propVitaData = {
     labels: propVitaLabels,
-    datasets: [
-      {
-        label: 'Prodotti Vita',
-        data: propVitaCounts,
-        backgroundColor: ['#FF9F40', '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
-      },
-    ],
+    datasets: [{
+      label: 'Prodotti Vita',
+      data: propVitaCounts,
+      backgroundColor: ['#FF9F40', '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
+    }]
   };
   const propVitaOptions = {
-    onClick: (event, elements, chart) => {
-      if (elements.length > 0) {
-        const index = elements[0].index;
-        const range = chart.data.labels[index];
-        setSelectedPropRange(range);
-      }
-    },
     responsive: true,
     plugins: { legend: { position: 'top' }, title: { display: false } },
     scales: {
       x: { title: { display: true, text: 'Intervallo di Propensione (Vita)' } },
-      y: { title: { display: true, text: 'Numero di clienti' }, beginAtZero: true },
-    },
+      y: { title: { display: true, text: 'Numero di clienti' }, beginAtZero: true }
+    }
   };
 
-  // --- Grafico: Distribuzione Propensione Acquisto Prodotti Danni ---
+  // --- Grafico: Distribuzione Propensione Prodotti Danni ---
   const propDanniCounts = new Array(propDanniLabels.length).fill(0);
-  filteredData.forEach((cliente) => {
+  filteredData.forEach(cliente => {
     const prop = Number(cliente.propensione_acquisto_prodotti_danni);
     if (!isNaN(prop)) {
-      const binIdx = propDanniBins.findIndex(
-        (bound, idx) =>
-          idx < propDanniBins.length - 1 &&
-          prop >= bound &&
-          prop < propDanniBins[idx + 1]
+      const binIdx = propDanniBins.findIndex((bound, idx) =>
+        idx < propDanniBins.length - 1 &&
+        prop >= bound && prop < propDanniBins[idx + 1]
       );
       if (binIdx !== -1) {
         propDanniCounts[binIdx]++;
@@ -458,54 +425,43 @@ const Dashboard = () => {
   });
   const propDanniData = {
     labels: propDanniLabels,
-    datasets: [
-      {
-        label: 'Prodotti Danni',
-        data: propDanniCounts,
-        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#8e44ad', '#27ae60'],
-      },
-    ],
+    datasets: [{
+      label: 'Prodotti Danni',
+      data: propDanniCounts,
+      backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#8e44ad', '#27ae60'],
+    }]
   };
   const propDanniOptions = {
-    onClick: (event, elements, chart) => {
-      if (elements.length > 0) {
-        const index = elements[0].index;
-        const range = chart.data.labels[index];
-        setSelectedPropDanni(range);
-      }
-    },
     responsive: true,
     plugins: { legend: { position: 'top' }, title: { display: false } },
     scales: {
       x: { title: { display: true, text: 'Intervallo di Propensione (Danni)' } },
-      y: { title: { display: true, text: 'Numero di clienti' }, beginAtZero: true },
-    },
+      y: { title: { display: true, text: 'Numero di clienti' }, beginAtZero: true }
+    }
   };
 
   const resetFilters = () => {
-    // for eta, reset to min and max values
     if (clienti.length) {
-      const ages = clienti.map((cliente) => cliente.eta);
+      const ages = clienti.map(cliente => cliente.eta);
       const minAge = Math.min(...ages);
       const maxAge = Math.max(...ages);
       setSelectedAgeRange([minAge, maxAge]);
     }
-    setSelectedProfession(null);
-    setSelectedIncomeBin(null);
-    setSelectedPropRange(null);
-    setSelectedPropDanni(null);
+    setSelectedProfession([]);
+    setSelectedIncomeBin([]);
+    setSelectedPropRange([]);
+    setSelectedPropDanni([]);
   };
 
   return (
     <DashboardContainer>
       {(selectedAgeRange !== null ||
-        selectedProfession !== null ||
-        selectedIncomeBin !== null ||
-        selectedPropRange !== null ||
-        selectedPropDanni !== null) && (
+        selectedProfession.length > 0 ||
+        selectedIncomeBin.length > 0 ||
+        selectedPropRange.length > 0 ||
+        selectedPropDanni.length > 0) && (
           <ResetButton onClick={resetFilters}>Mostra tutti i dati</ResetButton>
         )}
-      
       <MainContainer>
         {/* Area dei grafici */}
         <ChartsContainer>
@@ -516,7 +472,7 @@ const Dashboard = () => {
             </ChartColumn>
             <ChartColumn>
               <h3 style={{ textAlign: 'center' }}>
-                Distribuzione Professioni {selectedProfession ? `(Professione: ${selectedProfession})` : ''}
+                Distribuzione Professioni {selectedProfession.length > 0 ? `(Professione: ${selectedProfession.join(', ')})` : ''}
               </h3>
               <PieWrapper>
                 <Pie data={pieData} options={pieOptions} />
@@ -526,27 +482,26 @@ const Dashboard = () => {
           <ChartRow>
             <ChartColumn>
               <h3 style={{ textAlign: 'center' }}>
-                Distribuzione Reddito {selectedIncomeBin ? `(Fascia: ${selectedIncomeBin})` : ''}
+                Distribuzione Reddito {selectedIncomeBin.length > 0 ? `(Fascia: ${selectedIncomeBin.join(', ')})` : ''}
               </h3>
               <Bar data={incomeData} options={incomeOptions} />
             </ChartColumn>
             <ChartColumn>
               <h3 style={{ textAlign: 'center' }}>
                 Propensione all'Acquisto (Prodotti Vita){' '}
-                {selectedPropRange ? `(Intervallo: ${selectedPropRange})` : ''}
+                {selectedPropRange.length > 0 ? `(Intervallo: ${selectedPropRange.join(', ')})` : ''}
               </h3>
               <Bar data={propVitaData} options={propVitaOptions} />
             </ChartColumn>
             <ChartColumn>
               <h3 style={{ textAlign: 'center' }}>
                 Propensione all'Acquisto (Prodotti Danni){' '}
-                {selectedPropDanni ? `(Intervallo: ${selectedPropDanni})` : ''}
+                {selectedPropDanni.length > 0 ? `(Intervallo: ${selectedPropDanni.join(', ')})` : ''}
               </h3>
               <Bar data={propDanniData} options={propDanniOptions} />
             </ChartColumn>
           </ChartRow>
         </ChartsContainer>
-
         {/* Pannello dei filtri */}
         <FilterContainer>
           <FilterPanel
