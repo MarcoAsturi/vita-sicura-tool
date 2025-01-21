@@ -12,9 +12,12 @@ import {
   ArcElement,
 } from 'chart.js';
 import { API_BASE_URL } from '../config';
+import Slider from 'rc-slider';
+import 'rc-slider/assets/index.css';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
+// Styled components per la dashboard e per il layout a colonne
 const DashboardContainer = styled.div`
   max-width: 1400px;
   margin: 2rem auto;
@@ -80,8 +83,8 @@ const ResetButton = styled.button`
 
 const FilterPanel = ({
   clienti,
-  selectedAge,
-  setSelectedAge,
+  selectedAgeRange,
+  setSelectedAgeRange,
   selectedProfession,
   setSelectedProfession,
   selectedIncomeBin,
@@ -103,18 +106,21 @@ const FilterPanel = ({
       <div style={{ marginBottom: '1rem' }}>
         <label>Età:</label>
         <br />
-        <select
-          value={selectedAge !== null ? selectedAge : ''}
-          onChange={(e) => setSelectedAge(e.target.value ? Number(e.target.value) : null)}
-          style={{ width: '100%', padding: '4px' }}
-        >
-          <option value="">Tutte</option>
-          {uniqueAges.map((age) => (
-            <option key={age} value={age}>
-              {age}
-            </option>
-          ))}
-        </select>
+        {uniqueAges.length > 0 && (
+          <div style={{ margin: '0 10px' }}>
+            <Slider
+              range
+              min={uniqueAges[0]}
+              max={uniqueAges[uniqueAges.length - 1]}
+              defaultValue={[uniqueAges[0], uniqueAges[uniqueAges.length - 1]]}
+              value={selectedAgeRange}
+              onChange={setSelectedAgeRange}
+            />
+            <div>
+              Range selezionato: {selectedAgeRange ? `${selectedAgeRange[0]} - ${selectedAgeRange[1]}` : ''}
+            </div>
+          </div>
+        )}
       </div>
       <div style={{ marginBottom: '1rem' }}>
         <label>Professione:</label>
@@ -187,12 +193,12 @@ const FilterPanel = ({
 
 const Dashboard = () => {
   const [clienti, setClienti] = useState([]);
-  // Global state per i filtri
-  const [selectedAge, setSelectedAge] = useState(null);
+
+  const [selectedAgeRange, setSelectedAgeRange] = useState(null);
   const [selectedProfession, setSelectedProfession] = useState(null);
   const [selectedIncomeBin, setSelectedIncomeBin] = useState(null);
   const [selectedPropRange, setSelectedPropRange] = useState(null);
-  const [selectedPropDanni, setSelectedPropDanni] = useState(null); 
+  const [selectedPropDanni, setSelectedPropDanni] = useState(null);
 
   const incomeBins = [0, 20000, 40000, 60000, 80000, 100000, 120000, Infinity];
   const incomeLabels = incomeBins.slice(0, -1).map((bin, idx) => {
@@ -213,6 +219,13 @@ const Dashboard = () => {
         }
         const data = await response.json();
         setClienti(data);
+
+        if (data && data.length > 0) {
+          const ages = data.map((cliente) => cliente.eta);
+          const minAge = Math.min(...ages);
+          const maxAge = Math.max(...ages);
+          setSelectedAgeRange([minAge, maxAge]);
+        }
       } catch (error) {
         console.error("Errore nel recuperare i dati:", error);
       }
@@ -220,11 +233,13 @@ const Dashboard = () => {
     fetchClienti();
   }, []);
 
-  // apply filters combined
   const getFilteredClienti = () => {
     let data = clienti;
-    if (selectedAge !== null) {
-      data = data.filter((cliente) => cliente.eta === Number(selectedAge));
+    if (selectedAgeRange !== null) {
+      data = data.filter(
+        (cliente) =>
+          cliente.eta >= selectedAgeRange[0] && cliente.eta <= selectedAgeRange[1]
+      );
     }
     if (selectedProfession !== null) {
       data = data.filter((cliente) => cliente.professione === selectedProfession);
@@ -239,7 +254,6 @@ const Dashboard = () => {
           (high === Infinity ? true : cliente.reddito < high)
       );
     }
-    
     if (selectedPropRange !== null) {
       const [lowStr, highStr] = selectedPropRange.split('-').map((s) => s.trim());
       const low = Number(lowStr);
@@ -275,7 +289,6 @@ const Dashboard = () => {
     .map(Number)
     .sort((a, b) => a - b);
   const ageCountsArray = uniqueAgesForChart.map((age) => ageCounts[age]);
-
   const ageData = {
     labels: uniqueAgesForChart,
     datasets: [
@@ -290,9 +303,7 @@ const Dashboard = () => {
   const ageOptions = {
     onClick: (event, elements, chart) => {
       if (elements.length > 0) {
-        const index = elements[0].index;
-        const age = uniqueAgesForChart[index];
-        setSelectedAge(age);
+        // Qui potresti gestire, ad esempio, la selezione di un singolo valore
       }
     },
     responsive: true,
@@ -335,7 +346,6 @@ const Dashboard = () => {
       },
     ],
   };
-
   const pieOptions = {
     onClick: (event, elements, chart) => {
       if (elements.length > 0) {
@@ -372,7 +382,6 @@ const Dashboard = () => {
       },
     ],
   };
-
   const incomeOptions = {
     onClick: (event, elements, chart) => {
       if (elements.length > 0) {
@@ -415,7 +424,6 @@ const Dashboard = () => {
       },
     ],
   };
-
   const propVitaOptions = {
     onClick: (event, elements, chart) => {
       if (elements.length > 0) {
@@ -458,7 +466,6 @@ const Dashboard = () => {
       },
     ],
   };
-
   const propDanniOptions = {
     onClick: (event, elements, chart) => {
       if (elements.length > 0) {
@@ -476,7 +483,13 @@ const Dashboard = () => {
   };
 
   const resetFilters = () => {
-    setSelectedAge(null);
+    // for eta, reset to min and max values
+    if (clienti.length) {
+      const ages = clienti.map((cliente) => cliente.eta);
+      const minAge = Math.min(...ages);
+      const maxAge = Math.max(...ages);
+      setSelectedAgeRange([minAge, maxAge]);
+    }
     setSelectedProfession(null);
     setSelectedIncomeBin(null);
     setSelectedPropRange(null);
@@ -485,17 +498,17 @@ const Dashboard = () => {
 
   return (
     <DashboardContainer>
-      {(selectedAge !== null ||
+      {(selectedAgeRange !== null ||
         selectedProfession !== null ||
         selectedIncomeBin !== null ||
         selectedPropRange !== null ||
-        selectedPropDanni !== null) && <ResetButton onClick={resetFilters}>Mostra tutti i dati</ResetButton>}
+        selectedPropDanni !== null) && (
+          <ResetButton onClick={resetFilters}>Mostra tutti i dati</ResetButton>
+        )}
       
       <MainContainer>
-        
         {/* Area dei grafici */}
         <ChartsContainer>
-          {/* Top Row: Età e Professioni */}
           <ChartRow>
             <ChartColumn>
               <h3 style={{ textAlign: 'center' }}>Distribuzione Età</h3>
@@ -510,8 +523,6 @@ const Dashboard = () => {
               </PieWrapper>
             </ChartColumn>
           </ChartRow>
-
-          {/* Seconda Row: Reddito, Prodotti Vita e Prodotti Danni */}
           <ChartRow>
             <ChartColumn>
               <h3 style={{ textAlign: 'center' }}>
@@ -536,12 +547,12 @@ const Dashboard = () => {
           </ChartRow>
         </ChartsContainer>
 
-        {/* Pannello dei filtri a sinistra */}
+        {/* Pannello dei filtri */}
         <FilterContainer>
           <FilterPanel
             clienti={clienti}
-            selectedAge={selectedAge}
-            setSelectedAge={setSelectedAge}
+            selectedAgeRange={selectedAgeRange}
+            setSelectedAgeRange={setSelectedAgeRange}
             selectedProfession={selectedProfession}
             setSelectedProfession={setSelectedProfession}
             selectedIncomeBin={selectedIncomeBin}
