@@ -85,8 +85,7 @@ const ExtraChartsButton = styled.button`
   }
 `;
 
-
-// Contenitore per i bottoni in alto (stessi riga)
+// container for the two charts, to be displayed same row
 const TopButtonsContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -118,7 +117,6 @@ const ModalContent = styled.div`
   z-index: 1001;
 `;
 
-// Funzione helper per la gestione dei checkbox
 const handleCheckboxChange = (e, value, selectedArray, setSelectedArray) => {
   if (e.target.checked) {
     if (!selectedArray.includes(value)) {
@@ -129,7 +127,6 @@ const handleCheckboxChange = (e, value, selectedArray, setSelectedArray) => {
   }
 };
 
-// Componente FilterPanel con slider per età e checkbox per gli altri filtri
 const FilterPanel = ({
   clienti,
   selectedAgeRange,
@@ -247,7 +244,7 @@ const FilterPanel = ({
 };
 
 const Dashboard = () => {
-  // Definisco i bins per le propensioni
+  // Define the bins for the propensione ranges
   const propVitaBins = [0, 0.21, 0.41, 0.61, 0.81, 1.01];
   const propDanniBins = [0, 0.21, 0.41, 0.61, 0.81, 1.01];
 
@@ -259,7 +256,6 @@ const Dashboard = () => {
   const [selectedPropDanni, setSelectedPropDanni] = useState([]);
   const [showExtraCharts, setShowExtraCharts] = useState(false);
 
-  // Dati per i filtri
   const incomeBins = [0, 20000, 40000, 60000, 80000, 100000, 120000, Infinity];
   const incomeLabels = incomeBins.slice(0, -1).map((bin, idx) => {
     const upper = incomeBins[idx + 1] === Infinity ? '+' : incomeBins[idx + 1];
@@ -268,7 +264,7 @@ const Dashboard = () => {
   const propVitaLabels = ['0 - 0.20', '0.21 - 0.40', '0.41 - 0.60', '0.61 - 0.80', '0.81 - 1'];
   const propDanniLabels = ['0 - 0.20', '0.21 - 0.40', '0.41 - 0.60', '0.61 - 0.80', '0.81 - 1'];
 
-  // Recupera i dati dei clienti
+  // Retrieve the clients for the main charts
   useEffect(() => {
     const fetchClienti = async () => {
       try {
@@ -287,7 +283,7 @@ const Dashboard = () => {
     fetchClienti();
   }, []);
 
-  // Recupera le polizze per i grafici extra
+  // Retrieve the policies for the extra charts
   const [polizze, setPolizze] = useState([]);
   useEffect(() => {
     const fetchPolizze = async () => {
@@ -303,7 +299,7 @@ const Dashboard = () => {
     fetchPolizze();
   }, []);
 
-  // Filtra i clienti in base ai filtri impostati
+  // Filter the clients based on the selected filters
   const getFilteredClienti = () => {
     let data = clienti;
     if (selectedAgeRange) {
@@ -535,14 +531,14 @@ const Dashboard = () => {
     }
   };
 
-  // Filtra le polizze in base ai clienti filtrati
+  // Filter the policies based on the selected clients
   const getFilteredPolizze = () => {
     return polizze.filter(polizza =>
       filteredClienti.some(cliente => cliente.codice_cliente === polizza.codice_cliente)
     );
   };
 
-  // Aggrega i dati delle polizze per prodotto e per area di bisogno
+  // Aggregate data from extra policies by product and need area
   const aggregatedProducts = {};
   const aggregatedAreas = {};
   getFilteredPolizze().forEach(polizza => {
@@ -554,7 +550,6 @@ const Dashboard = () => {
     }
   });
 
-  // Array di 5 colori per i prodotti e 3 per le aree
   const productsColors = ['#FF6384', '#36A2EB', '#FFCE56', '#8e44ad', '#27ae60'];
   const areasColors = ['#FF6384', '#36A2EB', '#FFCE56'];
 
@@ -599,7 +594,6 @@ const Dashboard = () => {
 
   return (
     <DashboardContainer>
-      {/* Bottone in alto per il reset */}
       <TopButtonsContainer>
         {(selectedAgeRange ||
           selectedProfession.length > 0 ||

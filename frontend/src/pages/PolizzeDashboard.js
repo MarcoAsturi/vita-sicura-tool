@@ -115,15 +115,15 @@ const ModalContent = styled.div`
   z-index: 1001;
 `;
 
-// ------ API Fetching e Memoization ------
+// ------ API Fetching and Memoization ------
 
 const PolizzeDashboard = () => {
-  // Stati per dati API
+  // State for API data
   const [polizze, setPolizze] = useState([]);
   const [reclami, setReclami] = useState([]);
   const [sinistri, setSinistri] = useState([]);
 
-  // Effettua le chiamate API una sola volta
+  // Fetch API calls only once
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -139,15 +139,15 @@ const PolizzeDashboard = () => {
         setReclami(reclamiData);
         setSinistri(sinistriData);
       } catch (error) {
-        console.error("Errore nel recupero dei dati:", error);
+        console.error("Error fetching data:", error);
       }
     };
     fetchData();
   }, []);
 
-  // ------ Elaborazione dati dei grafici ------
+  // ------ Data Processing for Charts ------
 
-  // Memoizza i dataset per polizze per prodotto
+  // Memoize policies per product
   const polizzeProdottoData = useMemo(() => {
     const data = {};
     polizze.forEach(p => {
@@ -160,7 +160,7 @@ const PolizzeDashboard = () => {
       labels: Object.keys(data),
       datasets: [
         {
-          label: 'Numero di polizze per Prodotto',
+          label: 'Number of Policies per Product',
           data: Object.values(data),
           backgroundColor: 'rgba(54, 162, 235, 0.6)',
         }
@@ -168,7 +168,7 @@ const PolizzeDashboard = () => {
     };
   }, [polizze]);
 
-  // Memoizza i dataset per polizze per area di bisogno
+  // Memoize policies per need area
   const polizzeAreaData = useMemo(() => {
     const data = {};
     polizze.forEach(p => {
@@ -184,7 +184,7 @@ const PolizzeDashboard = () => {
       labels: Object.keys(data),
       datasets: [
         {
-          label: 'Polizze per Area di Bisogno',
+          label: 'Policies per Need Area',
           data: Object.values(data),
           backgroundColor: bgColors.slice(0, Object.keys(data).length),
         }
@@ -192,7 +192,7 @@ const PolizzeDashboard = () => {
     };
   }, [polizze]);
 
-  // Reclami per prodotto
+  // Complaints per product
   const reclamiData = useMemo(() => {
     const data = {};
     reclami.forEach(r => {
@@ -205,7 +205,7 @@ const PolizzeDashboard = () => {
       labels: Object.keys(data),
       datasets: [
         {
-          label: 'Reclami per Prodotto',
+          label: 'Complaints per Product',
           data: Object.values(data),
           backgroundColor: 'rgba(255, 99, 132, 0.6)',
         }
@@ -213,7 +213,7 @@ const PolizzeDashboard = () => {
     };
   }, [reclami]);
 
-  // Sinistri per prodotto
+  // Claims per product
   const sinistriData = useMemo(() => {
     const data = {};
     sinistri.forEach(s => {
@@ -226,7 +226,7 @@ const PolizzeDashboard = () => {
       labels: Object.keys(data),
       datasets: [
         {
-          label: 'Sinistri per Prodotto',
+          label: 'Claims per Product',
           data: Object.values(data),
           backgroundColor: 'rgba(54, 162, 235, 0.6)',
         }
@@ -234,14 +234,14 @@ const PolizzeDashboard = () => {
     };
   }, [sinistri]);
 
-  // Opzioni per grafici (non modificate qui)
+  // Common chart options
   const commonOptions = {
     responsive: true,
     plugins: { legend: { position: 'top' }, title: { display: false } },
   };
 
-  // ------ Grafici Extra (Modal) ------
-  // Aggrega i dati dalle polizze extra in base a prodotto e area di bisogno
+  // ------ Extra Charts (Modal) ------
+  // Aggregate data from extra policies by product and need area
   const aggregatedProducts = useMemo(() => {
     const data = {};
     polizze.forEach(p => {
@@ -262,14 +262,14 @@ const PolizzeDashboard = () => {
     return data;
   }, [polizze]);
 
-  // Array di 5 colori per i prodotti e 3 per le aree
+  // 5 colors for products and 3 for areas
   const productsColors = ['#FF6384', '#36A2EB', '#FFCE56', '#8e44ad', '#27ae60'];
   const areasColors = ['#FF6384', '#36A2EB', '#FFCE56'];
 
   const extraProductsData = useMemo(() => ({
     labels: Object.keys(aggregatedProducts),
     datasets: [{
-      label: 'Prodotti',
+      label: 'Products',
       data: Object.values(aggregatedProducts),
       backgroundColor: Object.keys(aggregatedProducts).map((_, idx) =>
         productsColors[idx % productsColors.length]
@@ -280,7 +280,7 @@ const PolizzeDashboard = () => {
   const extraAreasData = useMemo(() => ({
     labels: Object.keys(aggregatedAreas),
     datasets: [{
-      label: 'Aree di Bisogno',
+      label: 'Need Areas',
       data: Object.values(aggregatedAreas),
       backgroundColor: Object.keys(aggregatedAreas).map((_, idx) =>
         areasColors[idx % areasColors.length]
@@ -288,16 +288,15 @@ const PolizzeDashboard = () => {
     }]
   }), [aggregatedAreas]);
 
-  // Extra Options (per il modal)
+  // Extra chart options
   const extraOptions = {
     responsive: true,
     plugins: { legend: { position: 'top' }, title: { display: false } },
   };
 
-  // ------ Stato e Funzioni del Modal extra ------
+  // ------ Modal State and Functions ------
   const [showExtraCharts, setShowExtraCharts] = useState(false);
   const resetFiltersAndExtra = () => {
-    // Se necessario, puoi fare ulteriori reset (qui non è implementato un reset completo)
     setShowExtraCharts(false);
   };
 
@@ -305,58 +304,57 @@ const PolizzeDashboard = () => {
     <DashboardContainer>
 
       <MainContainer>
-        {/* Grafici principali */}
+        {/* Main Charts */}
         <ChartsContainer>
-          {/* Prima Row: Polizze per Prodotto e per Area di Bisogno */}
+          {/* First Row: Policies per Product and per Need Area */}
           <ChartRow>
             <ChartColumn>
-              <h3 style={{ textAlign: 'center' }}>Polizze per Prodotto</h3>
+              <h3 style={{ textAlign: 'center' }}>Policies per Product</h3>
               <Bar data={polizzeProdottoData} options={commonOptions} />
             </ChartColumn>
             <ChartColumn>
-              <h3 style={{ textAlign: 'center' }}>Polizze per Area di Bisogno</h3>
+              <h3 style={{ textAlign: 'center' }}>Policies per Need Area</h3>
               <PieWrapper>
                 <Pie data={polizzeAreaData} options={commonOptions} />
               </PieWrapper>
             </ChartColumn>
           </ChartRow>
-          {/* Seconda Row: Reclami e Sinistri per Prodotto */}
+          {/* Second Row: Complaints and Claims per Product */}
           <ChartRow>
             <ChartColumn>
-              <h3 style={{ textAlign: 'center' }}>Reclami per Prodotto</h3>
+              <h3 style={{ textAlign: 'center' }}>Complaints per Product</h3>
               <Bar data={reclamiData} options={{
                 ...commonOptions,
                 scales: {
-                  y: { title: { display: true, text: 'Numero di Reclami' }, beginAtZero: true }
+                  y: { title: { display: true, text: 'Number of Complaints' }, beginAtZero: true }
                 },
                 onClick: (event, elements, chart) => {
                   if (elements.length > 0) {
                     const index = elements[0].index;
                     const prodotto = chart.data.labels[index];
-                    console.log("Filtro applicato sui Reclami: Prodotto =", prodotto);
+                    console.log("Filter applied on Complaints: Product =", prodotto);
                   }
                 }
               }} />
             </ChartColumn>
             <ChartColumn>
-              <h3 style={{ textAlign: 'center' }}>Sinistri per Prodotto</h3>
+              <h3 style={{ textAlign: 'center' }}>Claims per Product</h3>
               <Bar data={sinistriData} options={{
                 ...commonOptions,
                 scales: {
-                  y: { title: { display: true, text: 'Numero di Sinistri' }, beginAtZero: true }
+                  y: { title: { display: true, text: 'Number of Claims' }, beginAtZero: true }
                 },
                 onClick: (event, elements, chart) => {
                   if (elements.length > 0) {
                     const index = elements[0].index;
                     const prodotto = chart.data.labels[index];
-                    console.log("Filtro applicato sui Sinistri: Prodotto =", prodotto);
+                    console.log("Filter applied on Claims: Product =", prodotto);
                   }
                 }
               }} />
             </ChartColumn>
           </ChartRow>
         </ChartsContainer>
-        {/* Qui, per semplicità, non è presente un pannello di filtri separato. Se necessario, puoi aggiungerlo */}
       </MainContainer>
     </DashboardContainer>
   );
