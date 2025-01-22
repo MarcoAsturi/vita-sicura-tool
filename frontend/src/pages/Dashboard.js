@@ -151,7 +151,7 @@ const FilterPanel = ({
     <div>
       {/* Slider per l'età */}
       <div style={{ marginBottom: '1rem' }}>
-        <label>Età:</label>
+        <label><strong>Età:</strong></label>
         <br />
         {uniqueAges.length > 0 && (
           <div style={{ margin: '0 10px' }}>
@@ -172,7 +172,7 @@ const FilterPanel = ({
 
       {/* Checkbox per Professione */}
       <div style={{ marginBottom: '1rem' }}>
-        <label>Professione:</label>
+        <label><strong>Professione:</strong></label>
         <br />
         {uniqueProfessions.map(prof => (
           <div key={prof}>
@@ -189,7 +189,7 @@ const FilterPanel = ({
 
       {/* Checkbox per Reddito */}
       <div style={{ marginBottom: '1rem' }}>
-        <label>Reddito:</label>
+        <label><strong>Reddito:</strong></label>
         <br />
         {incomeLabels.map(label => (
           <div key={label}>
@@ -206,7 +206,7 @@ const FilterPanel = ({
 
       {/* Checkbox per Propensione Prodotti Vita */}
       <div style={{ marginBottom: '1rem' }}>
-        <label>Propensione Prodotti Vita:</label>
+        <label><strong>Propensione Prodotti Vita:</strong></label>
         <br />
         {propVitaLabels.map(label => (
           <div key={label}>
@@ -223,7 +223,7 @@ const FilterPanel = ({
 
       {/* Checkbox per Propensione Prodotti Danni */}
       <div style={{ marginBottom: '1rem' }}>
-        <label>Propensione Prodotti Danni:</label>
+        <label><strong>Propensione Prodotti Danni:</strong></label>
         <br />
         {propDanniLabels.map(label => (
           <div key={label}>
