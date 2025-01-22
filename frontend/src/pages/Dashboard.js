@@ -61,13 +61,7 @@ const PieWrapper = styled.div`
   margin: 0 auto;
 `;
 
-const ExtraChartsContainer = styled.div`
-  margin-top: 2rem;
-`;
-
 const ResetButton = styled.button`
-  display: block;
-  margin: 0 auto 1rem auto;
   padding: 8px 16px;
   background-color: rgb(35, 34, 75);
   color: #fff;
@@ -79,9 +73,7 @@ const ResetButton = styled.button`
   }
 `;
 
-const ToggleExtraChartsButton = styled.button`
-  display: block;
-  margin: 1rem auto;
+const ExtraChartsButton = styled.button`
   padding: 8px 16px;
   background-color: rgb(35, 34, 75);
   color: #fff;
@@ -91,22 +83,53 @@ const ToggleExtraChartsButton = styled.button`
   &:hover {
     background-color: rgb(58, 58, 107);
   }
+`;
+
+
+// Contenitore per i bottoni in alto (stessi riga)
+const TopButtonsContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+`;
+
+// Modal Styled Components
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+`;
+const ModalContent = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 60%;           /* Larghezza aumentata */
+  max-height: 75%;      /* Altezza massima aumentata */
+  overflow-y: auto;
+  z-index: 1001;
 `;
 
 // Funzione helper per la gestione dei checkbox
 const handleCheckboxChange = (e, value, selectedArray, setSelectedArray) => {
   if (e.target.checked) {
-    // Se non ancora selezionato, aggiunge
     if (!selectedArray.includes(value)) {
       setSelectedArray([...selectedArray, value]);
     }
   } else {
-    // Rimuove l'opzione
     setSelectedArray(selectedArray.filter(item => item !== value));
   }
 };
 
-// Componente FilterPanel con checkbox e slider per età
+// Componente FilterPanel con slider per età e checkbox per gli altri filtri
 const FilterPanel = ({
   clienti,
   selectedAgeRange,
@@ -124,13 +147,12 @@ const FilterPanel = ({
   propVitaLabels,
   propDanniLabels,
 }) => {
-  // Calcola età min e max e opzioni per professione
   const uniqueAges = [...new Set(clienti.map(cliente => cliente.eta))].sort((a, b) => a - b);
   const uniqueProfessions = [...new Set(clienti.map(cliente => cliente.professione))].filter(Boolean);
 
   return (
     <div>
-      {/* Filtro per età con slider */}
+      {/* Slider per l'età */}
       <div style={{ marginBottom: '1rem' }}>
         <label>Età:</label>
         <br />
@@ -150,8 +172,8 @@ const FilterPanel = ({
           </div>
         )}
       </div>
-      
-      {/* Filtro per Professione con checkbox */}
+
+      {/* Checkbox per Professione */}
       <div style={{ marginBottom: '1rem' }}>
         <label>Professione:</label>
         <br />
@@ -167,8 +189,8 @@ const FilterPanel = ({
           </div>
         ))}
       </div>
-      
-      {/* Filtro per Reddito con checkbox */}
+
+      {/* Checkbox per Reddito */}
       <div style={{ marginBottom: '1rem' }}>
         <label>Reddito:</label>
         <br />
@@ -185,7 +207,7 @@ const FilterPanel = ({
         ))}
       </div>
 
-      {/* Filtro per Propensione Prodotti Vita con checkbox */}
+      {/* Checkbox per Propensione Prodotti Vita */}
       <div style={{ marginBottom: '1rem' }}>
         <label>Propensione Prodotti Vita:</label>
         <br />
@@ -202,7 +224,7 @@ const FilterPanel = ({
         ))}
       </div>
 
-      {/* Filtro per Propensione Prodotti Danni con checkbox */}
+      {/* Checkbox per Propensione Prodotti Danni */}
       <div style={{ marginBottom: '1rem' }}>
         <label>Propensione Prodotti Danni:</label>
         <br />
@@ -225,26 +247,25 @@ const FilterPanel = ({
 };
 
 const Dashboard = () => {
+  // Definisco i bins per le propensioni
+  const propVitaBins = [0, 0.21, 0.41, 0.61, 0.81, 1.01];
+  const propDanniBins = [0, 0.21, 0.41, 0.61, 0.81, 1.01];
+
   const [clienti, setClienti] = useState([]);
-  // Stato per lo slider (range età) e per i filtri multi-selezione (come array)
   const [selectedAgeRange, setSelectedAgeRange] = useState(null);
   const [selectedProfession, setSelectedProfession] = useState([]);
   const [selectedIncomeBin, setSelectedIncomeBin] = useState([]);
   const [selectedPropRange, setSelectedPropRange] = useState([]);
   const [selectedPropDanni, setSelectedPropDanni] = useState([]);
-  
-  // Stato per mostrare i grafici extra (proporzioni prodotti e aree di bisogno)
   const [showExtraCharts, setShowExtraCharts] = useState(false);
-  
+
   // Dati per i filtri
   const incomeBins = [0, 20000, 40000, 60000, 80000, 100000, 120000, Infinity];
   const incomeLabels = incomeBins.slice(0, -1).map((bin, idx) => {
     const upper = incomeBins[idx + 1] === Infinity ? '+' : incomeBins[idx + 1];
     return `${bin}-${upper}`;
   });
-  const propVitaBins = [0, 0.21, 0.41, 0.61, 0.81, 1.01];
   const propVitaLabels = ['0 - 0.20', '0.21 - 0.40', '0.41 - 0.60', '0.61 - 0.80', '0.81 - 1'];
-  const propDanniBins = [0, 0.21, 0.41, 0.61, 0.81, 1.01];
   const propDanniLabels = ['0 - 0.20', '0.21 - 0.40', '0.41 - 0.60', '0.61 - 0.80', '0.81 - 1'];
 
   // Recupera i dati dei clienti
@@ -266,7 +287,7 @@ const Dashboard = () => {
     fetchClienti();
   }, []);
 
-  // Recupera i dati delle polizze per i grafici extra
+  // Recupera le polizze per i grafici extra
   const [polizze, setPolizze] = useState([]);
   useEffect(() => {
     const fetchPolizze = async () => {
@@ -282,7 +303,7 @@ const Dashboard = () => {
     fetchPolizze();
   }, []);
 
-  // Filtraggio dei clienti
+  // Filtra i clienti in base ai filtri impostati
   const getFilteredClienti = () => {
     let data = clienti;
     if (selectedAgeRange) {
@@ -330,7 +351,7 @@ const Dashboard = () => {
 
   const filteredClienti = getFilteredClienti();
 
-  // --- Grafico: Distribuzione Età ---
+  // Grafico: Distribuzione Età
   const ageCounts = {};
   filteredClienti.forEach(cliente => {
     ageCounts[cliente.eta] = (ageCounts[cliente.eta] || 0) + 1;
@@ -351,15 +372,10 @@ const Dashboard = () => {
     scales: {
       x: { title: { display: true, text: 'Età' } },
       y: { title: { display: true, text: 'Numero di clienti' }, beginAtZero: true }
-    },
-    onClick: (event, elements, chart) => {
-      if (elements.length > 0) {
-        // TODO: add click event handling
-      }
     }
   };
 
-  // --- Grafico: Distribuzione Professioni ---
+  // Grafico: Distribuzione Professioni
   const professionCounts = {};
   filteredClienti.forEach(cliente => {
     if (cliente.professione) {
@@ -383,8 +399,7 @@ const Dashboard = () => {
       if (elements.length > 0) {
         const index = elements[0].index;
         const profession = chart.data.labels[index];
-        // Se già selezionata, rimuovila; altrimenti aggiungila
-        setSelectedProfession(prev => 
+        setSelectedProfession(prev =>
           prev.includes(profession)
             ? prev.filter(p => p !== profession)
             : [...prev, profession]
@@ -393,13 +408,14 @@ const Dashboard = () => {
     }
   };
 
-  // --- Grafico: Distribuzione Reddito ---
+  // Grafico: Distribuzione Reddito
   const incomeCounts = new Array(incomeLabels.length).fill(0);
   filteredClienti.forEach(cliente => {
     const income = cliente.reddito;
     const binIdx = incomeBins.findIndex((bound, idx) =>
       idx < incomeBins.length - 1 &&
-      income >= bound && income < incomeBins[idx + 1]
+      income >= bound &&
+      income < incomeBins[idx + 1]
     );
     if (binIdx !== -1) {
       incomeCounts[binIdx]++;
@@ -424,8 +440,7 @@ const Dashboard = () => {
       if (elements.length > 0) {
         const index = elements[0].index;
         const bin = chart.data.labels[index];
-        // Toggle per il filtro Reddito
-        setSelectedIncomeBin(prev => 
+        setSelectedIncomeBin(prev =>
           prev.includes(bin)
             ? prev.filter(b => b !== bin)
             : [...prev, bin]
@@ -434,14 +449,15 @@ const Dashboard = () => {
     }
   };
 
-  // --- Grafico: Distribuzione Propensione Prodotti Vita ---
+  // Grafico: Distribuzione Propensione Prodotti Vita
   const propVitaCounts = new Array(propVitaLabels.length).fill(0);
   filteredClienti.forEach(cliente => {
     const prop = Number(cliente.propensione_acquisto_prodotti_vita);
     if (!isNaN(prop)) {
       const binIdx = propVitaBins.findIndex((bound, idx) =>
         idx < propVitaBins.length - 1 &&
-        prop >= bound && prop < propVitaBins[idx + 1]
+        prop >= bound &&
+        prop < propVitaBins[idx + 1]
       );
       if (binIdx !== -1) {
         propVitaCounts[binIdx]++;
@@ -467,7 +483,6 @@ const Dashboard = () => {
       if (elements.length > 0) {
         const index = elements[0].index;
         const range = chart.data.labels[index];
-        // Toggle per il filtro Propensione Vita
         setSelectedPropRange(prev =>
           prev.includes(range)
             ? prev.filter(r => r !== range)
@@ -477,14 +492,15 @@ const Dashboard = () => {
     }
   };
 
-  // --- Grafico: Distribuzione Propensione Prodotti Danni ---
+  // Grafico: Distribuzione Propensione Prodotti Danni
   const propDanniCounts = new Array(propDanniLabels.length).fill(0);
   filteredClienti.forEach(cliente => {
     const prop = Number(cliente.propensione_acquisto_prodotti_danni);
     if (!isNaN(prop)) {
       const binIdx = propDanniBins.findIndex((bound, idx) =>
         idx < propDanniBins.length - 1 &&
-        prop >= bound && prop < propDanniBins[idx + 1]
+        prop >= bound &&
+        prop < propDanniBins[idx + 1]
       );
       if (binIdx !== -1) {
         propDanniCounts[binIdx]++;
@@ -519,9 +535,8 @@ const Dashboard = () => {
     }
   };
 
-  // Funzione per filtrare anche le polizze in base ai clienti filtrati
+  // Filtra le polizze in base ai clienti filtrati
   const getFilteredPolizze = () => {
-    // Considera solo le polizze relative a clienti filtrati
     return polizze.filter(polizza =>
       filteredClienti.some(cliente => cliente.codice_cliente === polizza.codice_cliente)
     );
@@ -531,24 +546,18 @@ const Dashboard = () => {
   const aggregatedProducts = {};
   const aggregatedAreas = {};
   getFilteredPolizze().forEach(polizza => {
-    // Aggregazione per prodotto
     if (polizza.prodotto) {
       aggregatedProducts[polizza.prodotto] = (aggregatedProducts[polizza.prodotto] || 0) + 1;
     }
-    // Aggregazione per area di bisogno
     if (polizza.area_di_bisogno) {
       aggregatedAreas[polizza.area_di_bisogno] = (aggregatedAreas[polizza.area_di_bisogno] || 0) + 1;
     }
   });
-  
-  // Prepara dati e opzioni per i grafici extra
-  // Array di 5 colori per i prodotti
-  const productsColors = ['#FF6384', '#36A2EB', '#FFCE56', '#8e44ad', '#27ae60'];
 
-  // Array di 3 colori per le aree di bisogno
+  // Array di 5 colori per i prodotti e 3 per le aree
+  const productsColors = ['#FF6384', '#36A2EB', '#FFCE56', '#8e44ad', '#27ae60'];
   const areasColors = ['#FF6384', '#36A2EB', '#FFCE56'];
 
-  // Prepara dati e opzioni per i grafici extra
   const extraProductsData = {
     labels: Object.keys(aggregatedProducts),
     datasets: [{
@@ -577,7 +586,6 @@ const Dashboard = () => {
   };
 
   const resetFiltersAndExtra = () => {
-    // Reset filtri
     if (clienti.length) {
       const ages = clienti.map(cliente => cliente.eta);
       setSelectedAgeRange([Math.min(...ages), Math.max(...ages)]);
@@ -586,21 +594,48 @@ const Dashboard = () => {
     setSelectedIncomeBin([]);
     setSelectedPropRange([]);
     setSelectedPropDanni([]);
-    // Nascondi grafici extra
     setShowExtraCharts(false);
   };
 
   return (
     <DashboardContainer>
-      {(selectedAgeRange ||
-        selectedProfession.length > 0 ||
-        selectedIncomeBin.length > 0 ||
-        selectedPropRange.length > 0 ||
-        selectedPropDanni.length > 0) && (
-        <ResetButton onClick={resetFiltersAndExtra}>Mostra tutti i dati</ResetButton>
+      {/* Bottone in alto per il reset */}
+      <TopButtonsContainer>
+        {(selectedAgeRange ||
+          selectedProfession.length > 0 ||
+          selectedIncomeBin.length > 0 ||
+          selectedPropRange.length > 0 ||
+          selectedPropDanni.length > 0) && (
+            <ResetButton onClick={resetFiltersAndExtra}>
+              Mostra tutti i dati
+            </ResetButton>
+        )}
+        <ExtraChartsButton onClick={() => setShowExtraCharts(true)}>
+          Mostra Proporzioni Prodotti/Aree di Bisogno
+        </ExtraChartsButton>
+      </TopButtonsContainer>
+
+      {/* Modal per i grafici extra */}
+      {showExtraCharts && (
+        <ModalOverlay onClick={() => setShowExtraCharts(false)}>
+          <ModalContent onClick={e => e.stopPropagation()}>
+            <ResetButton onClick={() => setShowExtraCharts(false)}>Chiudi</ResetButton>
+            <ChartRow>
+              <ChartColumn>
+                <h3 style={{ textAlign: 'center' }}>Prodotti</h3>
+                <Pie data={extraProductsData} options={extraOptions} />
+              </ChartColumn>
+              <ChartColumn>
+                <h3 style={{ textAlign: 'center' }}>Aree di Bisogno</h3>
+                <Bar data={extraAreasData} options={extraOptions} />
+              </ChartColumn>
+            </ChartRow>
+          </ModalContent>
+        </ModalOverlay>
       )}
+
       <MainContainer>
-        {/* Area dei grafici principali */}
+        {/* Grafici principali */}
         <ChartsContainer>
           <ChartRow>
             <ChartColumn>
@@ -638,24 +673,6 @@ const Dashboard = () => {
               <Bar data={propDanniData} options={propDanniOptions} />
             </ChartColumn>
           </ChartRow>
-          {/* Pulsante per mostrare/nascondere i grafici extra */}
-          <ToggleExtraChartsButton onClick={() => setShowExtraCharts(!showExtraCharts)}>
-            {showExtraCharts ? 'Nascondi Proporzioni Prodotti/Aree di Bisogno' : 'Mostra Proporzioni Prodotti/Aree di Bisogno'}
-          </ToggleExtraChartsButton>
-          {showExtraCharts && (
-            <ExtraChartsContainer>
-              <ChartRow>
-                <ChartColumn>
-                  <h3 style={{ textAlign: 'center' }}>Prodotti</h3>
-                  <Pie data={extraProductsData} options={extraOptions} />
-                </ChartColumn>
-                <ChartColumn>
-                  <h3 style={{ textAlign: 'center' }}>Aree di Bisogno</h3>
-                  <Bar data={extraAreasData} options={extraOptions} />
-                </ChartColumn>
-              </ChartRow>
-            </ExtraChartsContainer>
-          )}
         </ChartsContainer>
         {/* Pannello dei filtri */}
         <FilterContainer>
