@@ -171,7 +171,7 @@ const VoiceAssistant = () => {
       <Title>Vocal Assistant</Title>
       <SectionsWrapper>
         <Section>
-          <SectionTitle>Carica un file audio</SectionTitle>
+          <SectionTitle>Carica un file audio<br/ > (attualmente supportato solo formato .wav)</SectionTitle>
           <FileUploadContainer>
             <FileInput type="file" accept="audio/*" onChange={handleFileChange} />
             <Button onClick={handleButtonUpload}>Processa</Button>
