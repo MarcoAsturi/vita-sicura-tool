@@ -355,10 +355,10 @@ const Dashboard = () => {
   const uniqueAgesForChart = Object.keys(ageCounts).map(Number).sort((a, b) => a - b);
   const ageCountsArray = uniqueAgesForChart.map(age => ageCounts[age]);
   const ageData = {
-    labels: uniqueAgesForChart,
+    labels: uniqueAgesForChart || [],
     datasets: [{
       label: 'Numero di clienti',
-      data: ageCountsArray,
+      data: ageCountsArray || [],
       backgroundColor: 'rgba(75, 192, 192, 0.6)',
     }]
   };
@@ -638,7 +638,7 @@ const Dashboard = () => {
             </ChartColumn>
             <ChartColumn>
               <h3 style={{ textAlign: 'center' }}>
-                Distribuzione Professioni {selectedProfession.length > 0 ? `(Professione: ${selectedProfession.join(', ')})` : ''}
+                Distribuzione Professioni
               </h3>
               <PieWrapper>
                 <Pie data={pieData} options={pieOptions} />
@@ -648,21 +648,19 @@ const Dashboard = () => {
           <ChartRow>
             <ChartColumn>
               <h3 style={{ textAlign: 'center' }}>
-                Distribuzione Reddito {selectedIncomeBin.length > 0 ? `(Fascia: ${selectedIncomeBin.join(', ')})` : ''}
+                Distribuzione Reddito {/* {selectedIncomeBin.length > 0 ? `(Fascia: ${selectedIncomeBin.join(', ')})` : ''} */}
               </h3>
               <Bar data={incomeData} options={incomeOptions} />
             </ChartColumn>
             <ChartColumn>
               <h3 style={{ textAlign: 'center' }}>
-                Propensione all'Acquisto (Prodotti Vita){' '}
-                {selectedPropRange.length > 0 ? `(Intervallo: ${selectedPropRange.join(', ')})` : ''}
+                Propensione all'Acquisto (Prodotti Vita)
               </h3>
               <Bar data={propVitaData} options={propVitaOptions} />
             </ChartColumn>
             <ChartColumn>
               <h3 style={{ textAlign: 'center' }}>
-                Propensione all'Acquisto (Prodotti Danni){' '}
-                {selectedPropDanni.length > 0 ? `(Intervallo: ${selectedPropDanni.join(', ')})` : ''}
+                Propensione all'Acquisto (Prodotti Danni)
               </h3>
               <Bar data={propDanniData} options={propDanniOptions} />
             </ChartColumn>
