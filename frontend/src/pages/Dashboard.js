@@ -15,7 +15,7 @@ import {
 } from 'chart.js';
 import { API_BASE_URL } from '../config';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
+ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
 
 // Styled Components
 const DashboardContainer = styled.div`
@@ -53,11 +53,12 @@ const ChartRow = styled.div`
 const ChartColumn = styled.div`
   flex: 1;
   min-width: 300px;
+  height: 400px;
 `;
 
 const PieWrapper = styled.div`
-  width: 420px;
-  height: 420px;
+  width: 100%; 
+  height: 400px; 
   margin: 0 auto;
 `;
 
@@ -85,12 +86,21 @@ const ExtraChartsButton = styled.button`
   }
 `;
 
-// container for the two charts, to be displayed same row
+// Container per i bottoni in alto
 const TopButtonsContainer = styled.div`
   display: flex;
   justify-content: center;
   gap: 1rem;
   margin-bottom: 1rem;
+`;
+
+// Container per le due righe di grafici separate
+const FirstRowContainer = styled.div`
+  margin-bottom: 2rem;
+`;
+
+const SecondRowContainer = styled.div`
+  margin-bottom: 2rem;
 `;
 
 // Modal Styled Components
@@ -364,7 +374,11 @@ const Dashboard = () => {
   };
   const ageOptions = {
     responsive: true,
-    plugins: { legend: { position: 'top' }, title: { display: false } },
+    maintainAspectRatio: false, // Disabilita il mantenimento dell'aspect ratio
+    plugins: { 
+      legend: { position: 'top' }, 
+      title: { display: false } 
+    },
     scales: {
       x: { title: { display: true, text: 'Età' } },
       y: { title: { display: true, text: 'Numero di clienti' }, beginAtZero: true }
@@ -390,7 +404,17 @@ const Dashboard = () => {
   };
   const pieOptions = {
     responsive: true,
-    plugins: { legend: { position: 'bottom' } },
+    maintainAspectRatio: false, // Disabilita il mantenimento dell'aspect ratio
+    plugins: { 
+      legend: { 
+        position: 'bottom', // Posiziona la legenda in basso
+        labels: {
+          boxWidth: 20,
+          padding: 15,
+        }
+      }, 
+      title: { display: false } 
+    },
     onClick: (event, elements, chart) => {
       if (elements.length > 0) {
         const index = elements[0].index;
@@ -427,7 +451,11 @@ const Dashboard = () => {
   };
   const incomeOptions = {
     responsive: true,
-    plugins: { legend: { position: 'top' }, title: { display: false } },
+    maintainAspectRatio: false, // Disabilita il mantenimento dell'aspect ratio
+    plugins: { 
+      legend: { position: 'top' }, 
+      title: { display: false } 
+    },
     scales: {
       x: { title: { display: true, text: 'Fascia di Reddito' } },
       y: { title: { display: true, text: 'Numero di clienti' }, beginAtZero: true }
@@ -470,7 +498,11 @@ const Dashboard = () => {
   };
   const propVitaOptions = {
     responsive: true,
-    plugins: { legend: { position: 'top' }, title: { display: false } },
+    maintainAspectRatio: false, // Disabilita il mantenimento dell'aspect ratio
+    plugins: { 
+      legend: { position: 'top' }, 
+      title: { display: false } 
+    },
     scales: {
       x: { title: { display: true, text: 'Intervallo di Propensione (Vita)' } },
       y: { title: { display: true, text: 'Numero di clienti' }, beginAtZero: true }
@@ -513,7 +545,11 @@ const Dashboard = () => {
   };
   const propDanniOptions = {
     responsive: true,
-    plugins: { legend: { position: 'top' }, title: { display: false } },
+    maintainAspectRatio: false, // Disabilita il mantenimento dell'aspect ratio
+    plugins: { 
+      legend: { position: 'top' }, 
+      title: { display: false } 
+    },
     scales: {
       x: { title: { display: true, text: 'Intervallo di Propensione (Danni)' } },
       y: { title: { display: true, text: 'Numero di clienti' }, beginAtZero: true }
@@ -577,7 +613,11 @@ const Dashboard = () => {
 
   const extraOptions = {
     responsive: true,
-    plugins: { legend: { position: 'top' }, title: { display: false } }
+    maintainAspectRatio: false, // Disabilita il mantenimento dell'aspect ratio
+    plugins: { 
+      legend: { position: 'top' }, 
+      title: { display: false } 
+    }
   };
 
   const resetFiltersAndExtra = () => {
@@ -631,41 +671,41 @@ const Dashboard = () => {
       <MainContainer>
         {/* Grafici principali */}
         <ChartsContainer>
-          <ChartRow>
-            <ChartColumn>
-              <h3 style={{ textAlign: 'center' }}>Distribuzione Età</h3>
-              <Bar data={ageData} options={ageOptions} />
-            </ChartColumn>
-            <ChartColumn>
-              <h3 style={{ textAlign: 'center' }}>
-                Distribuzione Professioni
-              </h3>
-              <PieWrapper>
-                <Pie data={pieData} options={pieOptions} />
-              </PieWrapper>
-            </ChartColumn>
-          </ChartRow>
-          <ChartRow>
-            <ChartColumn>
-              <h3 style={{ textAlign: 'center' }}>
-                Distribuzione Reddito {/* {selectedIncomeBin.length > 0 ? `(Fascia: ${selectedIncomeBin.join(', ')})` : ''} */}
-              </h3>
-              <Bar data={incomeData} options={incomeOptions} />
-            </ChartColumn>
-            <ChartColumn>
-              <h3 style={{ textAlign: 'center' }}>
-                Propensione all'Acquisto (Prodotti Vita)
-              </h3>
-              <Bar data={propVitaData} options={propVitaOptions} />
-            </ChartColumn>
-            <ChartColumn>
-              <h3 style={{ textAlign: 'center' }}>
-                Propensione all'Acquisto (Prodotti Danni)
-              </h3>
-              <Bar data={propDanniData} options={propDanniOptions} />
-            </ChartColumn>
-          </ChartRow>
+          {/* Prima Riga di Grafici */}
+          <FirstRowContainer>
+            <ChartRow>
+              <ChartColumn>
+                <h3 style={{ textAlign: 'center' }}>Distribuzione Età</h3>
+                <Bar data={ageData} options={ageOptions} />
+              </ChartColumn>
+              <ChartColumn>
+                <h3 style={{ textAlign: 'center' }}>Distribuzione Professioni</h3>
+                <PieWrapper>
+                  <Pie data={pieData} options={pieOptions} />
+                </PieWrapper>
+              </ChartColumn>
+            </ChartRow>
+          </FirstRowContainer>
+
+          {/* Seconda Riga di Grafici */}
+          <SecondRowContainer>
+            <ChartRow>
+              <ChartColumn>
+                <h3 style={{ textAlign: 'center' }}>Distribuzione Reddito</h3>
+                <Bar data={incomeData} options={incomeOptions} />
+              </ChartColumn>
+              <ChartColumn>
+                <h3 style={{ textAlign: 'center' }}>Propensione all'Acquisto (Prodotti Vita)</h3>
+                <Bar data={propVitaData} options={propVitaOptions} />
+              </ChartColumn>
+              <ChartColumn>
+                <h3 style={{ textAlign: 'center' }}>Propensione all'Acquisto (Prodotti Danni)</h3>
+                <Bar data={propDanniData} options={propDanniOptions} />
+              </ChartColumn>
+            </ChartRow>
+          </SecondRowContainer>
         </ChartsContainer>
+
         {/* Pannello dei filtri */}
         <FilterContainer>
           <FilterPanel
