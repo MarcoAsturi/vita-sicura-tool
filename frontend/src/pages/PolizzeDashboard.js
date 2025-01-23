@@ -160,7 +160,7 @@ const PolizzeDashboard = () => {
       labels: Object.keys(data),
       datasets: [
         {
-          label: 'Number of Policies per Product',
+          label: 'Numero di polizze per prodotto',
           data: Object.values(data),
           backgroundColor: 'rgba(54, 162, 235, 0.6)',
         }
@@ -309,11 +309,11 @@ const PolizzeDashboard = () => {
           {/* First Row: Policies per Product and per Need Area */}
           <ChartRow>
             <ChartColumn>
-              <h3 style={{ textAlign: 'center' }}>Policies per Product</h3>
+              <h3 style={{ textAlign: 'center' }}>Polizze per prodotto</h3>
               <Bar data={polizzeProdottoData} options={commonOptions} />
             </ChartColumn>
             <ChartColumn>
-              <h3 style={{ textAlign: 'center' }}>Policies per Need Area</h3>
+              <h3 style={{ textAlign: 'center' }}>Polizze per area di bisogno</h3>
               <PieWrapper>
                 <Pie data={polizzeAreaData} options={commonOptions} />
               </PieWrapper>
@@ -322,11 +322,11 @@ const PolizzeDashboard = () => {
           {/* Second Row: Complaints and Claims per Product */}
           <ChartRow>
             <ChartColumn>
-              <h3 style={{ textAlign: 'center' }}>Complaints per Product</h3>
+              <h3 style={{ textAlign: 'center' }}>Reclami per prodotto</h3>
               <Bar data={reclamiData} options={{
                 ...commonOptions,
                 scales: {
-                  y: { title: { display: true, text: 'Number of Complaints' }, beginAtZero: true }
+                  y: { title: { display: true, text: 'Numero di sinistri' }, beginAtZero: true }
                 },
                 onClick: (event, elements, chart) => {
                   if (elements.length > 0) {
@@ -338,11 +338,11 @@ const PolizzeDashboard = () => {
               }} />
             </ChartColumn>
             <ChartColumn>
-              <h3 style={{ textAlign: 'center' }}>Claims per Product</h3>
+              <h3 style={{ textAlign: 'center' }}>Sinistri per prodotto</h3>
               <Bar data={sinistriData} options={{
                 ...commonOptions,
                 scales: {
-                  y: { title: { display: true, text: 'Number of Claims' }, beginAtZero: true }
+                  y: { title: { display: true, text: 'Numero di reclami' }, beginAtZero: true }
                 },
                 onClick: (event, elements, chart) => {
                   if (elements.length > 0) {
