@@ -162,7 +162,7 @@ const PolizzeDashboard = () => {
         {
           label: 'Numero di polizze per prodotto',
           data: Object.values(data),
-          backgroundColor: 'rgba(54, 162, 235, 0.6)',
+          backgroundColor: 'rgba(54, 235, 114, 0.6)',
         }
       ]
     };
@@ -205,9 +205,9 @@ const PolizzeDashboard = () => {
       labels: Object.keys(data),
       datasets: [
         {
-          label: 'Complaints per Product',
+          label: 'Reclami per prodotto',
           data: Object.values(data),
-          backgroundColor: 'rgba(255, 99, 132, 0.6)',
+          backgroundColor: 'rgba(138, 118, 54, 0.6)',
         }
       ]
     };
@@ -226,9 +226,9 @@ const PolizzeDashboard = () => {
       labels: Object.keys(data),
       datasets: [
         {
-          label: 'Claims per Product',
+          label: 'Sinistri per prodotto',
           data: Object.values(data),
-          backgroundColor: 'rgba(54, 162, 235, 0.6)',
+          backgroundColor: 'rgba(199, 54, 235, 0.6)',
         }
       ]
     };
@@ -237,7 +237,7 @@ const PolizzeDashboard = () => {
   // Common chart options
   const commonOptions = {
     responsive: true,
-    plugins: { legend: { position: 'top' }, title: { display: false } },
+    plugins: { legend: { display: false }, title: { display: false } },
   };
 
   // ------ Extra Charts (Modal) ------

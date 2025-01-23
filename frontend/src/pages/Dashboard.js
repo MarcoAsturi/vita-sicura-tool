@@ -86,7 +86,6 @@ const ExtraChartsButton = styled.button`
   }
 `;
 
-// Container per i bottoni in alto
 const TopButtonsContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -94,7 +93,6 @@ const TopButtonsContainer = styled.div`
   margin-bottom: 1rem;
 `;
 
-// Container per le due righe di grafici separate
 const FirstRowContainer = styled.div`
   margin-bottom: 2rem;
 `;
@@ -121,8 +119,8 @@ const ModalContent = styled.div`
   background: #ffffff;
   padding: 2rem;
   border-radius: 8px;
-  width: 60%;           /* Larghezza aumentata */
-  max-height: 75%;      /* Altezza massima aumentata */
+  width: 60%;        
+  max-height: 75%;      
   overflow-y: auto;
   z-index: 1001;
 `;
@@ -374,9 +372,9 @@ const Dashboard = () => {
   };
   const ageOptions = {
     responsive: true,
-    maintainAspectRatio: false, // Disabilita il mantenimento dell'aspect ratio
+    maintainAspectRatio: false, 
     plugins: { 
-      legend: { position: 'top' }, 
+      legend: { display: false }, 
       title: { display: false } 
     },
     scales: {
@@ -404,10 +402,10 @@ const Dashboard = () => {
   };
   const pieOptions = {
     responsive: true,
-    maintainAspectRatio: false, // Disabilita il mantenimento dell'aspect ratio
+    maintainAspectRatio: false,
     plugins: { 
       legend: { 
-        position: 'bottom', // Posiziona la legenda in basso
+        position: 'bottom',
         labels: {
           boxWidth: 20,
           padding: 15,
@@ -451,9 +449,9 @@ const Dashboard = () => {
   };
   const incomeOptions = {
     responsive: true,
-    maintainAspectRatio: false, // Disabilita il mantenimento dell'aspect ratio
+    maintainAspectRatio: false,
     plugins: { 
-      legend: { position: 'top' }, 
+      legend: { display: false }, 
       title: { display: false } 
     },
     scales: {
@@ -498,9 +496,9 @@ const Dashboard = () => {
   };
   const propVitaOptions = {
     responsive: true,
-    maintainAspectRatio: false, // Disabilita il mantenimento dell'aspect ratio
+    maintainAspectRatio: false,
     plugins: { 
-      legend: { position: 'top' }, 
+      legend: { display: false }, 
       title: { display: false } 
     },
     scales: {
@@ -545,9 +543,9 @@ const Dashboard = () => {
   };
   const propDanniOptions = {
     responsive: true,
-    maintainAspectRatio: false, // Disabilita il mantenimento dell'aspect ratio
+    maintainAspectRatio: false, 
     plugins: { 
-      legend: { position: 'top' }, 
+      legend: { display: false }, 
       title: { display: false } 
     },
     scales: {
