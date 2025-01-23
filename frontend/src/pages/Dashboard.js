@@ -611,9 +611,9 @@ const Dashboard = () => {
 
   const extraOptions = {
     responsive: true,
-    maintainAspectRatio: false, // Disabilita il mantenimento dell'aspect ratio
+    maintainAspectRatio: false,
     plugins: { 
-      legend: { position: 'top' }, 
+      legend: { display: false }, 
       title: { display: false } 
     }
   };
